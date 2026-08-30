@@ -1,0 +1,15 @@
+<Project>
+
+  <!-- Auto-format C# projects with `dotnet format` before each build. Skipped
+       during IDE design-time builds (intellisense) to avoid slowing those down,
+       and never fails the build - it just rewrites files in place. -->
+  <Target Name="DotnetFormatOnBuild"
+          BeforeTargets="BeforeBuild"
+          Condition="'$(DesignTimeBuild)' != 'true' And '$(MSBuildProjectExtension)' == '.csproj'">
+    <Exec Command="dotnet format &quot;$(MSBuildProjectFullPath)&quot; --no-restore --severity info"
+          ContinueOnError="WarnAndContinue"
+          StandardOutputImportance="low"
+          StandardErrorImportance="low" />
+  </Target>
+
+</Project>

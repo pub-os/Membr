@@ -1,0 +1,192 @@
+@if (error()) {
+  <z-alert zType="destructive" [zTitle]="error()" class="m-4" />
+}
+
+<div z-card class="m-4">
+  <div z-card-header>
+    <div class="flex items-center gap-2">
+      <div z-card-title class="text-xl">{{ member()?.firstName }} {{ member()?.surname }}</div>
+      @if (hasMultipleActiveMemberships()) {
+        <z-badge zType="secondary">{{ activeMembershipCount() }} active memberships</z-badge>
+      }
+    </div>
+    <div z-card-description>Member overview</div>
+    <div z-card-action>
+      <a z-button zType="outline" routerLink="/member/list">Back to List</a>
+    </div>
+  </div>
+
+  <div z-card-content>
+    @if (loading()) {
+      <p class="text-muted-foreground py-4 text-center text-sm">Loading...</p>
+    }
+
+    @if (!loading() && member(); as member) {
+      <dl class="grid grid-cols-2 gap-x-6 gap-y-3 text-sm md:grid-cols-4">
+        <div>
+          <dt class="text-muted-foreground text-xs font-medium tracking-wide uppercase">Member ID</dt>
+          <dd class="mt-0.5">{{ member.id }}</dd>
+        </div>
+        <div>
+          <dt class="text-muted-foreground text-xs font-medium tracking-wide uppercase">Date of Birth</dt>
+          <dd class="mt-0.5">{{ member.dateOfBirth | date:'mediumDate' }}</dd>
+        </div>
+      </dl>
+    }
+
+    @if (!loading() && !member() && !error()) {
+      <p class="text-muted-foreground py-4 text-center text-sm">Member not found</p>
+    }
+  </div>
+</div>
+
+<div z-card class="m-4">
+  <div z-card-header>
+    <div z-card-title>Memberships</div>
+    <div z-card-description>Memberships held by this member.</div>
+    <div z-card-action>
+      <button z-button (click)="openAddMembershipModal()">+ Add Membership</button>
+    </div>
+  </div>
+
+  <div z-card-content>
+    @if (membershipError() && !showAddMembershipModal()) {
+      <z-alert zType="destructive" [zTitle]="membershipError()" class="mb-4" />
+    }
+
+    @if (membershipsLoading()) {
+      <p class="text-muted-foreground py-4 text-center text-sm">Loading...</p>
+    }
+
+    @if (!membershipsLoading() && memberships().length === 0) {
+      <p class="text-muted-foreground py-4 text-center text-sm">No memberships yet</p>
+    }
+
+    @if (!membershipsLoading() && memberships().length > 0) {
+      <table z-table>
+        <thead z-table-header>
+          <tr z-table-row>
+            <th z-table-head>Type</th>
+            <th z-table-head>Start Date</th>
+            <th z-table-head>End Date</th>
+            <th z-table-head>Status</th>
+            <th z-table-head></th>
+          </tr>
+        </thead>
+        <tbody z-table-body>
+          @for (membership of memberships(); track membership.id) {
+            <tr z-table-row>
+              <td z-table-cell>{{ membership.membershipTypeName }}</td>
+              <td z-table-cell>{{ membership.startDate | date:'mediumDate' }}</td>
+              <td z-table-cell>{{ membership.endDate | date:'mediumDate' }}</td>
+              <td z-table-cell>
+                @if (membership.isActive) {
+                  <z-badge zType="default">Active</z-badge>
+                } @else {
+                  <z-badge zType="outline">Expired</z-badge>
+                }
+              </td>
+              <td z-table-cell>
+                <button z-button zType="outline" zSize="sm" [zLoading]="membershipActionLoading() === membership.id"
+                        [disabled]="membershipActionLoading() !== null" (click)="requestRenewMembership(membership)">
+                  Renew
+                </button>
+              </td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    }
+  </div>
+</div>
+
+<div z-card class="m-4">
+  <div z-card-header>
+    <div z-card-title>Custom Fields</div>
+    <div z-card-description>Values for this member's custom fields.</div>
+  </div>
+
+  <div z-card-content>
+    @if (udfFieldsError()) {
+      <z-alert zType="destructive" [zTitle]="udfFieldsError()" class="mb-4" />
+    }
+
+    @if (udfFieldsLoading()) {
+      <p class="text-muted-foreground py-4 text-center text-sm">Loading...</p>
+    }
+
+    @if (!udfFieldsLoading() && udfFields().length === 0) {
+      <p class="text-muted-foreground py-4 text-center text-sm">No custom fields defined</p>
+    }
+
+    @if (!udfFieldsLoading() && udfFields().length > 0) {
+      <table z-table>
+        <tbody z-table-body>
+          @for (field of udfFields(); track field.definitionId) {
+            <tr z-table-row>
+              <td z-table-cell class="w-1/3 text-muted-foreground">{{ field.name }}</td>
+              <td z-table-cell>
+                <app-udf-value-input
+                  [type]="field.type"
+                  [options]="field.options"
+                  [value]="field.value"
+                  (valueChange)="updateUdfFieldValue(field, $event)"
+                />
+              </td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    }
+  </div>
+</div>
+
+@if (showAddMembershipModal()) {
+  <div class="fixed inset-0 z-50 flex items-center justify-center bg-black/50" (click)="closeAddMembershipModal()">
+    <div z-card class="m-4 w-full max-w-sm" (click)="$event.stopPropagation()">
+      <div z-card-header>
+        <div z-card-title>Add membership</div>
+        <div z-card-description>Choose a membership type to add for this member.</div>
+      </div>
+      <div z-card-content>
+        @if (membershipError()) {
+          <z-alert zType="destructive" [zTitle]="membershipError()" class="mb-4" />
+        }
+        <div class="grid gap-1.5">
+          <label for="membershipType" class="text-sm font-medium">Membership type</label>
+          <select id="membershipType" [(ngModel)]="selectedMembershipTypeId"
+                  class="border-input h-9 rounded-md border bg-transparent px-3 py-1 text-sm shadow-xs">
+            <option [ngValue]="null">Select a membership type&hellip;</option>
+            @for (type of membershipTypes(); track type.id) {
+              <option [ngValue]="type.id">{{ type.name }}</option>
+            }
+          </select>
+        </div>
+      </div>
+      <div z-card-footer class="flex justify-end gap-2">
+        <button z-button zType="outline" (click)="closeAddMembershipModal()">Cancel</button>
+        <button z-button [zLoading]="membershipActionLoading() === 'create'" [disabled]="!selectedMembershipTypeId || membershipActionLoading() !== null"
+                (click)="addMembership()">
+          Add
+        </button>
+      </div>
+    </div>
+  </div>
+}
+
+@if (membershipPendingRenewal(); as pending) {
+  <div class="fixed inset-0 z-50 flex items-center justify-center bg-black/50" (click)="cancelRenewMembership()">
+    <div z-card class="m-4 w-full max-w-sm" (click)="$event.stopPropagation()">
+      <div z-card-header>
+        <div z-card-title>Confirm renewal</div>
+        <div z-card-description>
+          Renew the {{ pending.membershipTypeName }} membership (currently expires {{ pending.endDate | date:'mediumDate' }})?
+        </div>
+      </div>
+      <div z-card-footer class="flex justify-end gap-2">
+        <button z-button zType="outline" (click)="cancelRenewMembership()">Cancel</button>
+        <button z-button (click)="confirmRenewMembership()">Confirm</button>
+      </div>
+    </div>
+  </div>
+}

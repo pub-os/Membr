@@ -1,0 +1,105 @@
+<z-sidebar-provider zDefaultOpen="true" class="h-screen">
+  <z-sidebar zCollapsible="icon" class="h-full">
+    <div z-sidebar-header>
+      <ul z-sidebar-menu>
+        <li z-sidebar-menu-item>
+          <button z-sidebar-menu-button zSize="lg" routerLink="/">
+            <div
+              class="bg-sidebar-primary text-sidebar-primary-foreground flex aspect-square size-8 items-center justify-center rounded-lg"
+            >
+              <ng-icon name="lucideGalleryVerticalEnd" class="size-4" />
+            </div>
+
+            <div class="grid flex-1 text-left text-sm/tight">
+              <span class="truncate font-medium">Membr</span>
+              <span class="text-muted-foreground truncate text-xs">Membership admin</span>
+            </div>
+          </button>
+        </li>
+      </ul>
+
+      <div class="px-2 pb-1 group-data-[collapsible=icon]:hidden">
+        <z-input-group>
+          <z-input-group-addon>
+            <ng-icon name="lucideSearch" class="size-4" />
+          </z-input-group-addon>
+          <input
+            z-input
+            type="search"
+            placeholder="Search members..."
+            [(ngModel)]="searchQuery"
+            (keyup.enter)="search()"
+          />
+        </z-input-group>
+      </div>
+    </div>
+
+    <z-sidebar-content>
+      @for (group of navGroups(); track group.title) {
+        <div z-sidebar-group>
+          <div z-sidebar-group-label>{{ group.title }}</div>
+
+          <div z-sidebar-group-content>
+            <ul z-sidebar-menu>
+              @for (item of group.items; track item.title) {
+                <li z-sidebar-menu-item>
+                  <button
+                    z-sidebar-menu-button
+                    [zActive]="rla.isActive"
+                    [zTooltip]="item.title"
+                    [routerLink]="item.link"
+                    routerLinkActive
+                    #rla="routerLinkActive"
+                  >
+                    <ng-icon [name]="item.icon" />
+                    <span>{{ item.title }}</span>
+                  </button>
+                </li>
+              }
+            </ul>
+          </div>
+        </div>
+      }
+    </z-sidebar-content>
+
+    <div z-sidebar-footer>
+      <ul z-sidebar-menu>
+        <li z-sidebar-menu-item>
+          <z-dropdown-menu class="block w-full">
+            <button dropdown-trigger z-sidebar-menu-button zSize="lg">
+              <z-avatar class="size-8 rounded-lg" [zFallback]="userInitials()" />
+
+              <div class="grid flex-1 text-left text-sm/tight">
+                <span class="truncate font-medium">{{ auth.user()?.displayName ?? 'Loading…' }}</span>
+                <span class="text-muted-foreground truncate text-xs">{{ auth.user()?.email }}</span>
+              </div>
+            </button>
+
+            <div z-dropdown-menu-label>{{ auth.user()?.displayName }}</div>
+            <div z-dropdown-menu-separator></div>
+            <button z-dropdown-menu-item (click)="logout()">
+              <ng-icon name="lucideLogOut" class="mr-2 size-4" />
+              Log out
+            </button>
+          </z-dropdown-menu>
+        </li>
+      </ul>
+    </div>
+
+    <button z-sidebar-rail aria-label="Toggle Sidebar"></button>
+  </z-sidebar>
+
+  <main z-sidebar-inset class="overflow-auto">
+    <header class="bg-background sticky top-0 flex h-16 shrink-0 items-center gap-2 border-b px-4">
+      <button z-sidebar-trigger class="-ml-1" aria-label="Toggle Sidebar"></button>
+
+      <z-separator zOrientation="vertical" class="mr-2 data-[orientation=vertical]:h-4 data-[orientation=vertical]:self-center" />
+
+      <span class="font-medium">Membr</span>
+    </header>
+
+    <div class="flex flex-1 flex-col p-4">
+      <ng-content />
+    </div>
+  </main>
+</z-sidebar-provider>

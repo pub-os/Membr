@@ -1,0 +1,73 @@
+@if (error()) {
+  <z-alert zType="destructive" [zTitle]="error()" class="m-4" />
+}
+
+<div z-card class="m-4">
+  <div z-card-header>
+    <div z-card-title>New Membership Type</div>
+    <div z-card-description>Define a membership type and how it renews.</div>
+  </div>
+
+  <div z-card-content>
+    <div class="grid gap-4 md:grid-cols-2">
+      <div class="grid gap-1.5">
+        <label for="name" class="text-sm font-medium">Name</label>
+        <input id="name" z-input type="text" [(ngModel)]="name" placeholder="e.g. Standard" />
+      </div>
+
+      <div class="grid gap-1.5 md:col-span-2">
+        <label for="description" class="text-sm font-medium">Description</label>
+        <textarea
+          id="description"
+          [(ngModel)]="description"
+          rows="2"
+          placeholder="What this membership type includes"
+          class="border-input flex w-full rounded-md border bg-transparent px-3 py-2 text-sm shadow-xs"
+        ></textarea>
+      </div>
+
+      <div class="grid gap-1.5">
+        <label for="renewalMode" class="text-sm font-medium">Renewal mode</label>
+        <select id="renewalMode" [(ngModel)]="renewalMode"
+                class="border-input h-9 rounded-md border bg-transparent px-3 py-1 text-sm shadow-xs">
+          <option value="Rolling">Rolling &ndash; renews for a fixed duration from whenever it starts</option>
+          <option value="FixedTerm">Fixed-term &ndash; always expires on the same calendar date each year</option>
+        </select>
+      </div>
+
+      @if (renewalMode === 'Rolling') {
+        <div class="grid gap-1.5">
+          <label for="durationMonths" class="text-sm font-medium">Duration (months)</label>
+          <input id="durationMonths" z-input type="number" min="1" step="1" [(ngModel)]="durationMonths" />
+        </div>
+      }
+
+      @if (renewalMode === 'FixedTerm') {
+        <div class="grid gap-1.5">
+          <label for="anchorMonth" class="text-sm font-medium">Expiry month</label>
+          <select id="anchorMonth" [(ngModel)]="fixedTermAnchorMonth"
+                  class="border-input h-9 rounded-md border bg-transparent px-3 py-1 text-sm shadow-xs">
+            @for (month of months; track month.value) {
+              <option [ngValue]="month.value">{{ month.label }}</option>
+            }
+          </select>
+        </div>
+        <div class="grid gap-1.5">
+          <label for="anchorDay" class="text-sm font-medium">Expiry day</label>
+          <input id="anchorDay" z-input type="number" min="1" max="31" step="1" [(ngModel)]="fixedTermAnchorDay" />
+        </div>
+      }
+
+      <div class="flex items-center gap-2">
+        <input id="isActive" type="checkbox" [(ngModel)]="isActive" class="h-4 w-4" />
+        <label for="isActive" class="text-sm font-medium">Active</label>
+      </div>
+    </div>
+  </div>
+
+  <div z-card-footer>
+    <button z-button [zLoading]="loading()" (click)="createMembershipType()" [disabled]="loading()">
+      Create Membership Type
+    </button>
+  </div>
+</div>

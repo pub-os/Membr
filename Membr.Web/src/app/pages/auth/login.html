@@ -1,0 +1,46 @@
+<div class="flex min-h-screen items-center justify-center p-4">
+  <z-card class="w-full max-w-sm">
+    <div z-card-header>
+      <div z-card-title>Sign in</div>
+      <div z-card-description>Sign in to Membr with your email and password.</div>
+    </div>
+
+    <div z-card-content>
+      <form (ngSubmit)="submit()" class="grid gap-4">
+        <div class="grid gap-2">
+          <label for="email" class="text-sm font-medium">Email</label>
+          <input
+            z-input
+            id="email"
+            name="email"
+            type="email"
+            autocomplete="email"
+            required
+            [(ngModel)]="email"
+          />
+        </div>
+
+        <div class="grid gap-2">
+          <label for="password" class="text-sm font-medium">Password</label>
+          <input
+            z-input
+            id="password"
+            name="password"
+            type="password"
+            autocomplete="current-password"
+            required
+            [(ngModel)]="password"
+          />
+        </div>
+
+        @if (error()) {
+          <z-alert zType="destructive" [zDescription]="error()!" />
+        }
+
+        <button z-button type="submit" class="w-full" [zLoading]="loading()" [zDisabled]="loading()">
+          {{ loading() ? 'Signing in…' : 'Sign in' }}
+        </button>
+      </form>
+    </div>
+  </z-card>
+</div>

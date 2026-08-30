@@ -1,0 +1,24 @@
+<!-- Membr.Web/Membr.Web.njsproj -->
+<Project Sdk="Microsoft.Build.NoTargets/3.7.56">
+  <PropertyGroup>
+    <TargetFramework>net9.0</TargetFramework>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <None Include="**/*"
+          Exclude="node_modules\**;dist\**;.angular\**" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Script Include="src\app\pages\MembershipTypes\list.ts" />
+    <Script Include="src\app\pages\members\Create\Create.ts" />
+    <Script Include="src\app\pages\members\List\List.ts" />
+    <Script Include="src\app\pages\members\MembersComponent.ts" />
+    <Script Include="src\app\services\MemberService.ts" />
+    <Script Include="src\app\services\MembershipTypeService.ts" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="src\app\components\" />
+  </ItemGroup>
+</Project>

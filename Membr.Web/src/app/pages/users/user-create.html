@@ -1,0 +1,45 @@
+@if (error()) {
+  <z-alert zType="destructive" [zTitle]="error()" class="m-4" />
+}
+
+<div z-card class="m-4">
+  <div z-card-header>
+    <div z-card-title>New User</div>
+    <div z-card-description>Create an admin user and assign their role.</div>
+  </div>
+
+  <div z-card-content>
+    <div class="grid gap-4 md:grid-cols-2">
+      <div class="grid gap-1.5">
+        <label for="displayName" class="text-sm font-medium">Name</label>
+        <input id="displayName" z-input type="text" [(ngModel)]="displayName" placeholder="e.g. Jane Smith" />
+      </div>
+
+      <div class="grid gap-1.5">
+        <label for="email" class="text-sm font-medium">Email</label>
+        <input id="email" z-input type="email" [(ngModel)]="email" placeholder="jane@example.com" />
+      </div>
+
+      <div class="grid gap-1.5">
+        <label for="password" class="text-sm font-medium">Password</label>
+        <input id="password" z-input type="password" [(ngModel)]="password" />
+      </div>
+
+      <div class="grid gap-1.5">
+        <label for="role" class="text-sm font-medium">Role</label>
+        <select id="role" [(ngModel)]="role"
+                class="border-input h-9 rounded-md border bg-transparent px-3 py-1 text-sm shadow-xs">
+          @for (r of roles(); track r) {
+            <option [value]="r">{{ r }}</option>
+          }
+        </select>
+      </div>
+    </div>
+  </div>
+
+  <div z-card-footer>
+    <button z-button [zLoading]="loading()" (click)="createUser()" [disabled]="loading()">
+      Create User
+    </button>
+  </div>
+</div>

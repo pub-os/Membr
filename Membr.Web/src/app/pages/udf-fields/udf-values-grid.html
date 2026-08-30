@@ -1,0 +1,55 @@
+<div z-card class="m-4">
+  <div z-card-header>
+    <div z-card-title>Custom Field Values</div>
+    <div z-card-description>Every member's value for each custom field. Edits save immediately.</div>
+    <div z-card-action>
+      <a z-button zType="outline" routerLink="/settings/udf-fields">Back to Fields</a>
+    </div>
+  </div>
+
+  <div z-card-content>
+    @if (error()) {
+      <z-alert zType="destructive" [zTitle]="error()" class="mb-4" />
+    }
+
+    @if (loading()) {
+      <p class="text-muted-foreground py-4 text-center text-sm">Loading...</p>
+    }
+
+    @if (!loading() && !grid().definitions.length) {
+      <p class="text-muted-foreground py-4 text-center text-sm">No custom fields defined yet</p>
+    }
+
+    @if (!loading() && grid().definitions.length) {
+      <div class="overflow-x-auto">
+        <table z-table>
+          <thead z-table-header>
+            <tr z-table-row>
+              <th z-table-head>Member</th>
+              @for (definition of grid().definitions; track definition.id) {
+                <th z-table-head>{{ definition.name }}</th>
+              }
+            </tr>
+          </thead>
+          <tbody z-table-body>
+            @for (member of grid().members; track member.id) {
+              <tr z-table-row>
+                <td z-table-cell class="whitespace-nowrap">{{ member.firstName }} {{ member.surname }}</td>
+                @for (definition of grid().definitions; track definition.id) {
+                  <td z-table-cell>
+                    <app-udf-value-input
+                      [type]="definition.type"
+                      [options]="definition.options"
+                      [value]="getValue(member.id, definition.id)"
+                      (valueChange)="setValue(member.id, definition.id, $event)"
+                    />
+                  </td>
+                }
+              </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+    }
+  </div>
+</div>

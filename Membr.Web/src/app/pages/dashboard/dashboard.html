@@ -1,0 +1,88 @@
+<div class="m-4 flex flex-col gap-4">
+  @if (error()) {
+    <z-alert zType="destructive" [zTitle]="error()" />
+  }
+
+  @if (loading()) {
+    <p class="text-muted-foreground py-4 text-center text-sm">Loading...</p>
+  }
+
+  @if (!loading() && stats()) {
+    <div class="grid grid-cols-1 gap-4 sm:grid-cols-2">
+      <div z-card>
+        <div z-card-header>
+          <div z-card-description>Total members</div>
+        </div>
+        <div z-card-content>
+          <div class="text-3xl font-semibold">{{ totalMembers() }}</div>
+        </div>
+      </div>
+
+      <div z-card>
+        <div z-card-header>
+          <div z-card-description>Members with an active membership</div>
+        </div>
+        <div z-card-content>
+          <div class="text-3xl font-semibold">{{ activeMembers() }}</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="grid grid-cols-1 gap-4 xl:grid-cols-2">
+      <div z-card>
+        <div z-card-header>
+          <div z-card-title>Active memberships by type</div>
+          <div z-card-description>Current breakdown of active members per membership type.</div>
+        </div>
+        <div z-card-content>
+          @if (membershipTypeBreakdown().length) {
+            <div class="chart-frame">
+              <ngx-charts-bar-vertical
+                [results]="membershipTypeBreakdown()"
+                [scheme]="breakdownScheme"
+                [xAxis]="true"
+                [yAxis]="true"
+                [showYAxisLabel]="true"
+                yAxisLabel="Active members"
+                [roundDomains]="true"
+                [roundEdges]="true"
+                [barPadding]="12"
+              />
+            </div>
+          } @else {
+            <p class="text-muted-foreground py-4 text-center text-sm">No active memberships yet</p>
+          }
+        </div>
+      </div>
+
+      <div z-card>
+        <div z-card-header>
+          <div z-card-title>New memberships &amp; renewals</div>
+          <div z-card-description>Monthly activity over the last 12 months.</div>
+        </div>
+        <div z-card-content>
+          @if (monthlyActivity().length) {
+            <div class="chart-frame">
+              <ngx-charts-bar-vertical-2d
+                [results]="monthlyActivity()"
+                [scheme]="activityScheme"
+                [xAxis]="true"
+                [yAxis]="true"
+                [showYAxisLabel]="true"
+                yAxisLabel="Count"
+                [legend]="true"
+                [legendPosition]="legendPosition"
+                [roundDomains]="true"
+                [roundEdges]="true"
+                [groupPadding]="16"
+                [barPadding]="4"
+              />
+            </div>
+          } @else {
+            <p class="text-muted-foreground py-4 text-center text-sm">No activity yet</p>
+          }
+        </div>
+      </div>
+    </div>
+  }
+</div>

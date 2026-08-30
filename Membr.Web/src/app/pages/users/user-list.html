@@ -1,0 +1,50 @@
+<div z-card class="m-4">
+  <div z-card-header>
+    <div z-card-title>Users</div>
+    <div z-card-description>Admin users and their assigned roles.</div>
+    <div z-card-action>
+      <a z-button routerLink="/users/create">+ Add User</a>
+    </div>
+  </div>
+
+  <div z-card-content>
+    @if (error()) {
+      <z-alert zType="destructive" [zTitle]="error()" class="mb-4" />
+    }
+
+    @if (loading()) {
+      <p class="text-muted-foreground py-4 text-center text-sm">Loading...</p>
+    }
+
+    @if (!loading() && users().length) {
+      <table z-table>
+        <thead z-table-header>
+        <tr z-table-row>
+          <th z-table-head>Name</th>
+          <th z-table-head>Email</th>
+          <th z-table-head>Roles</th>
+        </tr>
+        </thead>
+        <tbody z-table-body>
+          @for (user of users(); track user.id) {
+            <tr z-table-row>
+              <td z-table-cell>{{ user.displayName }}</td>
+              <td z-table-cell class="text-muted-foreground">{{ user.email }}</td>
+              <td z-table-cell>
+                @for (role of user.roles; track role) {
+                  <z-badge class="mr-1">{{ role }}</z-badge>
+                } @empty {
+                  <span class="text-muted-foreground">&mdash;</span>
+                }
+              </td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    }
+
+    @if (!loading() && !users().length) {
+      <p class="text-muted-foreground py-4 text-center text-sm">No users found</p>
+    }
+  </div>
+</div>

@@ -1,0 +1,83 @@
+<div class="flex flex-col gap-4 p-4">
+  <div class="flex items-center justify-between">
+    <h1 class="text-2xl font-semibold">Members</h1>
+    <button z-button (click)="toggleCreateForm()">
+      {{ showCreateForm() ? 'Cancel' : '+ New Member' }}
+    </button>
+  </div>
+
+  @if (error()) {
+    <z-alert zType="destructive" [zTitle]="error()" />
+  }
+  @if (successMessage()) {
+    <z-alert [zTitle]="successMessage()" />
+  }
+
+  @if (showCreateForm()) {
+    <div z-card>
+      <div z-card-header>
+        <div z-card-title>New Member</div>
+      </div>
+
+      <div z-card-content>
+        <div class="grid gap-4 md:grid-cols-3">
+          <div class="grid gap-1.5">
+            <label for="firstName" class="text-sm font-medium">First Name</label>
+            <input id="firstName" z-input type="text" [(ngModel)]="newMember.firstName" placeholder="First name" />
+          </div>
+          <div class="grid gap-1.5">
+            <label for="surname" class="text-sm font-medium">Surname</label>
+            <input id="surname" z-input type="text" [(ngModel)]="newMember.surname" placeholder="Surname" />
+          </div>
+          <div class="grid gap-1.5">
+            <label for="dob" class="text-sm font-medium">Date of Birth</label>
+            <input id="dob" z-input type="date" [(ngModel)]="newMember.dateOfBirth" />
+          </div>
+        </div>
+      </div>
+
+      <div z-card-footer>
+        <button z-button [zLoading]="loading()" (click)="createMember()" [disabled]="loading()">
+          Create Member
+        </button>
+      </div>
+    </div>
+  }
+
+  <div z-card>
+    <div z-card-content>
+      @if (loading() && !members().length) {
+        <p class="text-muted-foreground py-4 text-center text-sm">Loading...</p>
+      }
+
+      @if (!loading() && !members().length) {
+        <p class="text-muted-foreground py-4 text-center text-sm">No members found</p>
+      }
+
+      @if (!loading() && members().length) {
+        <table z-table>
+          <thead z-table-header>
+            <tr z-table-row>
+              <th z-table-head>#</th>
+              <th z-table-head>First Name</th>
+              <th z-table-head>Surname</th>
+              <th z-table-head></th>
+            </tr>
+          </thead>
+          <tbody z-table-body>
+            @for (member of members(); track member.id) {
+              <tr z-table-row>
+                <td z-table-cell>{{ member.id }}</td>
+                <td z-table-cell>{{ member.firstName }}</td>
+                <td z-table-cell>{{ member.surname }}</td>
+                <td z-table-cell class="text-right">
+                  <a z-button zType="outline" zSize="sm" [routerLink]="['/member', member.id]">View</a>
+                </td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      }
+    </div>
+  </div>
+</div>

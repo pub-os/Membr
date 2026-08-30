@@ -1,0 +1,11 @@
+**/bin/
+**/obj/
+**/.vs/
+**/.idea/
+**/.angular/
+Membr.Web/node_modules/
+Membr.Web/dist/
+Membr.Module.Member.Tests/
+.git/
+.codegraph/
+*.md

@@ -1,0 +1,46 @@
+<div z-card class="m-4">
+  <div z-card-header>
+    <div z-card-title>Membership Types</div>
+    <div z-card-description>Browse and search your membership types.</div>
+    <div z-card-action>
+      <a z-button routerLink="/membershiptype/create">+ Create a Membership type</a>
+    </div>
+  </div>
+
+  <div z-card-content>
+    @if (error()) {
+      <z-alert zType="destructive" [zTitle]="error()" class="mb-4" />
+    }
+
+    @if (loading()) {
+      <p class="text-muted-foreground py-4 text-center text-sm">Loading...</p>
+    }
+
+    @if (!loading() && membershipTypes().length) {
+      <table z-table>
+        <thead z-table-header>
+        <tr z-table-row>
+          <th z-table-head>#</th>
+          <th z-table-head>Name</th>
+          <th z-table-head>Description</th>
+          <th z-table-head>Status</th>
+        </tr>
+        </thead>
+        <tbody z-table-body>
+          @for (membershipType of membershipTypes(); track membershipType.id) {
+            <tr z-table-row>
+              <td z-table-cell>{{ membershipType.id }}</td>
+              <td z-table-cell>{{ membershipType.name }}</td>
+              <td z-table-cell class="text-muted-foreground">{{ membershipType.description || '—' }}</td>
+              <td z-table-cell>{{ membershipType.isActive }}</td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    }
+
+    @if (!loading() && !membershipTypes().length) {
+      <p class="text-muted-foreground py-4 text-center text-sm">No membership types found</p>
+    }
+  </div>
+</div>

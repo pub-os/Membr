@@ -1,0 +1,21 @@
+.chart-frame {
+  height: 320px;
+
+  ::ng-deep {
+    .gridline-path {
+      stroke: var(--border);
+    }
+
+    .tick text {
+      fill: var(--muted-foreground);
+    }
+
+    .legend-labels {
+      background: transparent !important;
+    }
+
+    .legend-label-text {
+      color: var(--foreground) !important;
+    }
+  }
+}

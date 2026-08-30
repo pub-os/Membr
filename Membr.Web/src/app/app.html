@@ -1,0 +1,7 @@
+@if (auth.isAuthenticated()) {
+  <app-sidebar>
+    <router-outlet />
+  </app-sidebar>
+} @else {
+  <router-outlet />
+}

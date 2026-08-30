@@ -1,0 +1,16 @@
+services:
+  postgres:
+    image: postgres:17
+    container_name: membr-db
+    restart: unless-stopped
+    ports:
+      - "5432:5432"
+    environment:
+      POSTGRES_USER: membr
+      POSTGRES_PASSWORD: membr_dev
+      POSTGRES_DB: membr
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+
+volumes:
+  pgdata:
