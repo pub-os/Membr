@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 140 140" role="img" aria-label="Membr">
+  <title>Membr</title>
+  <!-- Single-ink mark for light backgrounds (thermal receipts, laser print, embossing). -->
+  <rect width="140" height="140" rx="32" fill="#0A4D3C"/>
+  <rect x="46" y="30" width="60" height="74" rx="10" fill="#0A4D3C" fill-opacity="0.45"/>
+  <rect x="24" y="52" width="86" height="60" rx="10" fill="#FFFFFF"/>
+  <circle cx="46" cy="74" r="8" fill="#0A4D3C"/>
+  <path d="M32 100 C32 91 38.3 84 46 84 S60 91 60 100" fill="#0A4D3C"/>
+  <rect x="62" y="68" width="36" height="6" rx="3" fill="#0A4D3C" fill-opacity="0.7"/>
+  <rect x="62" y="80" width="26" height="6" rx="3" fill="#0A4D3C" fill-opacity="0.7"/>
+</svg>

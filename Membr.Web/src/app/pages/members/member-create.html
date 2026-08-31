@@ -26,6 +26,40 @@
         <input id="dob" z-input type="date" [(ngModel)]="newMember.dateOfBirth" />
       </div>
     </div>
+
+    <div class="mt-6">
+      <div class="mb-2 flex items-center justify-between">
+        <span class="text-sm font-medium">Contact Details</span>
+        <button z-button zType="outline" zSize="sm" (click)="addContactRow()" type="button">+ Add Contact</button>
+      </div>
+
+      @if (contacts.length === 0) {
+        <p class="text-muted-foreground text-sm">No contact details added</p>
+      }
+
+      @for (contact of contacts; track $index) {
+        <div class="mb-2 grid grid-cols-1 items-end gap-2 md:grid-cols-[9rem_1fr_6rem_auto]">
+          <div class="grid gap-1.5">
+            <label class="text-sm font-medium">Type</label>
+            <select [(ngModel)]="contact.contactType"
+                    class="border-input h-9 rounded-md border bg-transparent px-3 py-1 text-sm shadow-xs">
+              @for (type of contactTypes; track type) {
+                <option [ngValue]="type">{{ type }}</option>
+              }
+            </select>
+          </div>
+          <div class="grid gap-1.5">
+            <label class="text-sm font-medium">Detail</label>
+            <input z-input type="text" [(ngModel)]="contact.contactDetail" placeholder="Email or phone number" />
+          </div>
+          <div class="flex items-center gap-1.5 pb-2">
+            <input type="checkbox" [(ngModel)]="contact.isPrimary" id="primary-{{ $index }}" />
+            <label for="primary-{{ $index }}" class="text-sm font-medium">Primary</label>
+          </div>
+          <button z-button zType="outline" zSize="sm" (click)="removeContactRow($index)" type="button">Remove</button>
+        </div>
+      }
+    </div>
   </div>
 
   <div z-card-footer>

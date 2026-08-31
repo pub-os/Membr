@@ -3,6 +3,7 @@ using System;
 using Membr.Module.Member.Persistence;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
@@ -11,9 +12,11 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace Membr.Module.Member.Persistence.Migrations
 {
     [DbContext(typeof(MembersDbContext))]
-    partial class MembersDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260830101533_add_contact_information")]
+    partial class add_contact_information
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -278,58 +281,6 @@ namespace Membr.Module.Member.Persistence.Migrations
                     b.ToTable("membership_types", "members");
                 });
 
-            modelBuilder.Entity("Membr.Module.Member.Domain.Token", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("integer")
-                        .HasColumnName("id");
-
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
-
-                    b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("timestamp with time zone")
-                        .HasColumnName("created_at");
-
-                    b.Property<bool>("IsRevoked")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("boolean")
-                        .HasDefaultValue(false)
-                        .HasColumnName("is_revoked");
-
-                    b.Property<int>("MemberId")
-                        .HasColumnType("integer")
-                        .HasColumnName("member_id");
-
-                    b.Property<DateTime?>("RevokedAt")
-                        .HasColumnType("timestamp with time zone")
-                        .HasColumnName("revoked_at");
-
-                    b.Property<string>("TokenType")
-                        .IsRequired()
-                        .HasMaxLength(20)
-                        .HasColumnType("character varying(20)")
-                        .HasColumnName("token_type");
-
-                    b.Property<string>("Value")
-                        .IsRequired()
-                        .HasMaxLength(100)
-                        .HasColumnType("character varying(100)")
-                        .HasColumnName("value");
-
-                    b.HasKey("Id")
-                        .HasName("pk_tokens");
-
-                    b.HasIndex("MemberId")
-                        .HasDatabaseName("ix_tokens_member_id");
-
-                    b.HasIndex("Value")
-                        .IsUnique()
-                        .HasDatabaseName("ix_tokens_value");
-
-                    b.ToTable("tokens", "members");
-                });
-
             modelBuilder.Entity("Membr.Module.Member.Domain.UdfDefinition", b =>
                 {
                     b.Property<int>("Id")
@@ -441,18 +392,6 @@ namespace Membr.Module.Member.Persistence.Migrations
                         .HasConstraintName("fk_membership_renewals_memberships_membership_id");
 
                     b.Navigation("Membership");
-                });
-
-            modelBuilder.Entity("Membr.Module.Member.Domain.Token", b =>
-                {
-                    b.HasOne("Membr.Module.Member.Domain.Member", "Member")
-                        .WithMany()
-                        .HasForeignKey("MemberId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired()
-                        .HasConstraintName("fk_tokens_members_member_id");
-
-                    b.Navigation("Member");
                 });
 #pragma warning restore 612, 618
         }

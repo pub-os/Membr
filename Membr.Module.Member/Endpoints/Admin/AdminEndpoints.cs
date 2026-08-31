@@ -1,11 +1,13 @@
 // Endpoints/Admin/AdminEndpoints.cs
 namespace Membr.Module.Member.Endpoints.Admin;
 
+using Application.Handlers.Contacts;
 using Application.Handlers.Dashboard;
 using Application.Handlers.Members;
 using Application.Handlers.Memberships;
 using Application.Handlers.MembershipTypes;
 using Application.Handlers.Settings;
+using Application.Handlers.Tokens;
 using Application.Handlers.Udf;
 using Membr.Shared;
 using Microsoft.AspNetCore.Builder;
@@ -106,6 +108,22 @@ internal static class AdminEndpoints
             .WithName("ApplyUdfDefaultToAllMembers")
             .WithSummary("Apply a field's default value to every member");
 
+        var memberContacts = app.MapGroup("/admin/members/{memberId}/contacts")
+            .WithTags("Admin: Member Contacts")
+            .RequireAuthorization("AdminOnly");
+        memberContacts.MapGet("/", ListMemberContacts)
+            .WithName("ListMemberContacts")
+            .WithSummary("List a member's contact details");
+        memberContacts.MapPost("/", CreateMemberContact)
+            .WithName("CreateMemberContact")
+            .WithSummary("Add a contact detail for a member");
+        memberContacts.MapPut("/{contactId}", UpdateMemberContact)
+            .WithName("UpdateMemberContact")
+            .WithSummary("Update a member's contact detail");
+        memberContacts.MapDelete("/{contactId}", DeleteMemberContact)
+            .WithName("DeleteMemberContact")
+            .WithSummary("Delete a member's contact detail");
+
         var memberUdfValues = app.MapGroup("/admin/members/{memberId}/udf-values")
             .WithTags("Admin: Member UDF Values")
             .RequireAuthorization("AdminOnly");
@@ -115,6 +133,26 @@ internal static class AdminEndpoints
         memberUdfValues.MapPut("/{definitionId}", UpdateMemberUdfValue)
             .WithName("UpdateMemberUdfValue")
             .WithSummary("Update a member's value for a user-defined field");
+
+        var memberTokens = app.MapGroup("/admin/members/{memberId}/tokens")
+            .WithTags("Admin: Member Tokens")
+            .RequireAuthorization("AdminOnly");
+        memberTokens.MapGet("/", ListMemberTokens)
+            .WithName("ListMemberTokens")
+            .WithSummary("List a member's tokens");
+        memberTokens.MapPost("/", CreateMemberToken)
+            .WithName("CreateMemberToken")
+            .WithSummary("Assign a new token to a member");
+        memberTokens.MapDelete("/{tokenId}", RevokeMemberToken)
+            .WithName("RevokeMemberToken")
+            .WithSummary("Revoke a member's token");
+
+        var tokens = app.MapGroup("/admin/tokens")
+            .WithTags("Admin: Tokens")
+            .RequireAuthorization("AdminOnly");
+        tokens.MapGet("/lookup", LookupToken)
+            .WithName("LookupToken")
+            .WithSummary("Look up the member owning a token (used by the in-app scan tool)");
     }
 
 
@@ -315,6 +353,83 @@ internal static class AdminEndpoints
             UpdateMemberUdfValueStatus.DefinitionNotFound => TypedResults.NotFound(),
             _ => TypedResults.ValidationProblem(new Dictionary<string, string[]> { ["value"] = [result.Error!] }),
         };
+    }
+
+    private static async Task<Ok<List<ContactDto>>> ListMemberContacts(
+        [FromRoute] int memberId, ListMemberContactsHandler handler, CancellationToken ct)
+    {
+        var contacts = await handler.Handle(memberId, ct);
+        return TypedResults.Ok(contacts);
+    }
+
+    private static async Task<Results<Created<ContactDto>, NotFound, ValidationProblem>> CreateMemberContact(
+        [FromRoute] int memberId, CreateMemberContactRequest request, CreateMemberContactHandler handler, CancellationToken ct)
+    {
+        var result = await handler.Handle(memberId, request, ct);
+        return result.Status switch
+        {
+            CreateMemberContactStatus.Success => TypedResults.Created(
+                $"/admin/members/{memberId}/contacts/{result.Contact!.Id}", result.Contact),
+            CreateMemberContactStatus.MemberNotFound => TypedResults.NotFound(),
+            _ => TypedResults.ValidationProblem(new Dictionary<string, string[]> { ["contactDetail"] = [result.Error!] }),
+        };
+    }
+
+    private static async Task<Results<Ok<ContactDto>, NotFound, ValidationProblem>> UpdateMemberContact(
+        [FromRoute] int memberId, [FromRoute] int contactId, UpdateMemberContactRequest request,
+        UpdateMemberContactHandler handler, CancellationToken ct)
+    {
+        var result = await handler.Handle(memberId, contactId, request, ct);
+        return result.Status switch
+        {
+            UpdateMemberContactStatus.Success => TypedResults.Ok(result.Contact!),
+            UpdateMemberContactStatus.NotFound => TypedResults.NotFound(),
+            _ => TypedResults.ValidationProblem(new Dictionary<string, string[]> { ["contactDetail"] = [result.Error!] }),
+        };
+    }
+
+    private static async Task<Results<NoContent, NotFound>> DeleteMemberContact(
+        [FromRoute] int memberId, [FromRoute] int contactId, DeleteMemberContactHandler handler, CancellationToken ct)
+    {
+        var deleted = await handler.Handle(memberId, contactId, ct);
+        if (!deleted) return TypedResults.NotFound();
+        return TypedResults.NoContent();
+    }
+
+    private static async Task<Ok<List<TokenDto>>> ListMemberTokens(
+        [FromRoute] int memberId, ListMemberTokensHandler handler, CancellationToken ct)
+    {
+        var tokens = await handler.Handle(memberId, ct);
+        return TypedResults.Ok(tokens);
+    }
+
+    private static async Task<Results<Created<TokenDto>, NotFound, ValidationProblem>> CreateMemberToken(
+        [FromRoute] int memberId, CreateMemberTokenRequest request, CreateMemberTokenHandler handler, CancellationToken ct)
+    {
+        var result = await handler.Handle(memberId, request, ct);
+        return result.Status switch
+        {
+            CreateMemberTokenStatus.Success => TypedResults.Created(
+                $"/admin/members/{memberId}/tokens/{result.Token!.Id}", result.Token),
+            CreateMemberTokenStatus.MemberNotFound => TypedResults.NotFound(),
+            _ => TypedResults.ValidationProblem(new Dictionary<string, string[]> { ["value"] = [result.Error!] }),
+        };
+    }
+
+    private static async Task<Results<NoContent, NotFound>> RevokeMemberToken(
+        [FromRoute] int memberId, [FromRoute] int tokenId, RevokeMemberTokenHandler handler, CancellationToken ct)
+    {
+        var revoked = await handler.Handle(memberId, tokenId, ct);
+        if (!revoked) return TypedResults.NotFound();
+        return TypedResults.NoContent();
+    }
+
+    private static async Task<Results<Ok<TokenLookupDto>, NotFound>> LookupToken(
+        [FromQuery] string value, LookupTokenHandler handler, CancellationToken ct)
+    {
+        var result = await handler.Handle(value, ct);
+        if (result is null) return TypedResults.NotFound();
+        return TypedResults.Ok(result);
     }
 }
 

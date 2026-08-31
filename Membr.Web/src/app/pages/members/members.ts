@@ -30,7 +30,8 @@ export class MembersComponent implements OnInit {
   newMember: CreateMemberRequest = {
     firstName: '',
     surname: '',
-    dateOfBirth: ''
+    dateOfBirth: '',
+    contacts: [],
   };
 
   private currentQuery = '';
@@ -99,7 +100,7 @@ export class MembersComponent implements OnInit {
         this.successMessage.set(`Member ${created.firstName} ${created.surname} created`);
         this.loading.set(false);
         this.showCreateForm.set(false);
-        this.newMember = { firstName: '', surname: '', dateOfBirth: '' };
+        this.newMember = { firstName: '', surname: '', dateOfBirth: '', contacts: [] };
 
         if (this.currentQuery) {
           this.searchMembers(this.currentQuery);

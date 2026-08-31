@@ -9,6 +9,7 @@ import {
   lucideListChecks,
   lucideLogOut,
   lucidePlus,
+  lucideScan,
   lucideSearch,
   lucideSettings,
   lucideTags,
@@ -58,6 +59,7 @@ interface NavGroup {
       lucideListChecks,
       lucideLogOut,
       lucidePlus,
+      lucideScan,
       lucideSearch,
       lucideSettings,
       lucideTags,
@@ -80,6 +82,7 @@ export class Sidebar {
       items: [
         { title: 'All Members', icon: 'lucideUsers', link: '/member/list' },
         { title: 'Add Member', icon: 'lucideUserPlus', link: '/member/create' },
+        { title: 'Scan Token', icon: 'lucideScan', link: '/tokens/scan' },
       ],
     },
   ];

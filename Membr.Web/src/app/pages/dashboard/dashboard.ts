@@ -35,14 +35,14 @@ export class DashboardComponent implements OnInit {
     name: 'membershipTypeBreakdown',
     selectable: false,
     group: ScaleType.Ordinal,
-    domain: ['#2a78d6'],
+    domain: ['#0F6E56'],
   };
 
   readonly activityScheme: Color = {
     name: 'monthlyActivity',
     selectable: true,
     group: ScaleType.Ordinal,
-    domain: ['#2a78d6', '#eb6834'],
+    domain: ['#0F6E56', '#9AD9C4'],
   };
 
   stats = signal<DashboardStatsDto | null>(null);

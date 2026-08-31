@@ -34,6 +34,11 @@ export const routes: Routes = [
     loadComponent: () => import('./pages/members/member-overview').then(m => m.MemberOverviewComponent),
   },
   {
+    path: 'tokens/scan',
+    canActivate: [authGuard],
+    loadComponent: () => import('./pages/tokens/token-scan').then(m => m.TokenScanComponent),
+  },
+  {
     path: 'membershiptype/list',
     canActivate: [authGuard, adminGuard],
     loadComponent: () => import('./pages/membership-types/membership-type-list').then(m => m.MembershipTypeListComponent),

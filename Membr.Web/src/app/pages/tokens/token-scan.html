@@ -1,0 +1,29 @@
+<div z-card class="m-4 max-w-md">
+  <div z-card-header>
+    <div z-card-title>Scan token</div>
+    <div z-card-description>Scan an RFID card or type a token value, then press Enter to open the member's profile.</div>
+  </div>
+
+  <div z-card-content class="grid gap-3">
+    @if (error()) {
+      <z-alert zType="destructive" [zTitle]="error()" />
+    }
+
+    <input
+      #tokenInput
+      z-input
+      type="text"
+      [(ngModel)]="value"
+      (keyup.enter)="scan()"
+      [disabled]="loading()"
+      placeholder="Waiting for scan..."
+      autocomplete="off"
+    />
+  </div>
+
+  <div z-card-footer class="flex justify-end">
+    <button z-button [zLoading]="loading()" [disabled]="!value.trim() || loading()" (click)="scan()">
+      Look up
+    </button>
+  </div>
+</div>
