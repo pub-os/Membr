@@ -7,3 +7,7 @@ riderModule.iml
 /.idea/
 .env
 .env.*
+*.editorconfig
+docker-compose.demo.yml
+/Membr.Web/.vscode/
+/Membr.Web/README.md
