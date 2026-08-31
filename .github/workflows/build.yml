@@ -1,0 +1,54 @@
+name: Build
+
+on:
+  push:
+    branches: [main, dev]
+  pull_request:
+    branches: [main, dev]
+
+jobs:
+  build-api:
+    name: Build & test .NET
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '10.0.x'
+          dotnet-quality: 'ga'
+
+      - name: Restore
+        run: dotnet restore Membr.sln
+
+      - name: Build
+        run: dotnet build Membr.sln --no-restore --configuration Release
+
+      - name: Test
+        run: dotnet test Membr.sln --no-build --configuration Release
+
+  build-web:
+    name: Build Angular app
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: Membr.Web
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: 'npm'
+          cache-dependency-path: Membr.Web/package-lock.json
+
+      - name: Install dependencies
+        run: npm ci --legacy-peer-deps
+
+      - name: Build
+        run: npm run build
+
+      - name: Test
+        run: npm test -- --watch=false
