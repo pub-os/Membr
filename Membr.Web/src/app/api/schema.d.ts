@@ -546,6 +546,8 @@ export interface components {
             activeMembers: number | string;
             membershipTypeBreakdown: components["schemas"]["MembershipTypeBreakdownDto"][];
             monthlyActivity: components["schemas"]["MonthlyActivityDto"][];
+            recentlyJoinedMembers: components["schemas"]["RecentlyJoinedMemberDto"][];
+            recentRenewals: components["schemas"]["RecentRenewalDto"][];
         };
         HttpValidationProblemDetails: {
             type?: null | string;
@@ -655,6 +657,28 @@ export interface components {
             page: number | string;
             /** Format: int32 */
             pageSize: number | string;
+        };
+        RecentlyJoinedMemberDto: {
+            /** Format: int32 */
+            memberId: number | string;
+            firstName: string;
+            surname: string;
+            membershipTypeName: string;
+            /** Format: date-time */
+            joinedAt: string;
+        };
+        RecentRenewalDto: {
+            /** Format: int32 */
+            membershipId: number | string;
+            /** Format: int32 */
+            memberId: number | string;
+            firstName: string;
+            surname: string;
+            membershipTypeName: string;
+            /** Format: date-time */
+            renewedAt: string;
+            /** Format: date-time */
+            newEndDate: string;
         };
         TokenDto: {
             /** Format: int32 */

@@ -6,6 +6,7 @@ using Persistence;
 internal sealed class GetDashboardStatsHandler(MembersDbContext db, TimeProvider clock)
 {
     private const int MonthsOfHistory = 12;
+    private const int RecentItemsCount = 5;
 
     public async Task<DashboardStatsDto> Handle(CancellationToken ct)
     {
@@ -52,6 +53,31 @@ internal sealed class GetDashboardStatsHandler(MembersDbContext db, TimeProvider
             monthlyActivity.Add(new MonthlyActivityDto(month.Year, month.Month, newCount, renewalCount));
         }
 
-        return new DashboardStatsDto(totalMembers, activeMembers, membershipTypeBreakdown, monthlyActivity);
+        var recentlyJoinedMembers = await db.Memberships
+            .Include(m => m.Member)
+            .Include(m => m.MembershipType)
+            .OrderByDescending(m => m.StartDate)
+            .Take(RecentItemsCount)
+            .Select(m => new RecentlyJoinedMemberDto(
+                m.MemberId, m.Member.FirstName, m.Member.Surname, m.MembershipType.Name, m.StartDate))
+            .ToListAsync(ct);
+
+        var recentRenewals = await db.MembershipRenewals
+            .Include(r => r.Membership).ThenInclude(m => m.Member)
+            .Include(r => r.Membership).ThenInclude(m => m.MembershipType)
+            .OrderByDescending(r => r.RenewedAt)
+            .Take(RecentItemsCount)
+            .Select(r => new RecentRenewalDto(
+                r.MembershipId,
+                r.Membership.MemberId,
+                r.Membership.Member.FirstName,
+                r.Membership.Member.Surname,
+                r.Membership.MembershipType.Name,
+                r.RenewedAt,
+                r.NewEndDate))
+            .ToListAsync(ct);
+
+        return new DashboardStatsDto(
+            totalMembers, activeMembers, membershipTypeBreakdown, monthlyActivity, recentlyJoinedMembers, recentRenewals);
     }
 }

@@ -6,7 +6,7 @@
   },
   "servers": [
     {
-      "url": "http://localhost:5299/"
+      "url": "http://localhost:5219/"
     }
   ],
   "paths": {
@@ -1732,7 +1732,9 @@
           "totalMembers",
           "activeMembers",
           "membershipTypeBreakdown",
-          "monthlyActivity"
+          "monthlyActivity",
+          "recentlyJoinedMembers",
+          "recentRenewals"
         ],
         "type": "object",
         "properties": {
@@ -1762,6 +1764,18 @@
             "type": "array",
             "items": {
               "$ref": "#/components/schemas/MonthlyActivityDto"
+            }
+          },
+          "recentlyJoinedMembers": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/RecentlyJoinedMemberDto"
+            }
+          },
+          "recentRenewals": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/RecentRenewalDto"
             }
           }
         }
@@ -2221,6 +2235,86 @@
               "string"
             ],
             "format": "int32"
+          }
+        }
+      },
+      "RecentlyJoinedMemberDto": {
+        "required": [
+          "memberId",
+          "firstName",
+          "surname",
+          "membershipTypeName",
+          "joinedAt"
+        ],
+        "type": "object",
+        "properties": {
+          "memberId": {
+            "pattern": "^-?(?:0|[1-9]\\d*)$",
+            "type": [
+              "integer",
+              "string"
+            ],
+            "format": "int32"
+          },
+          "firstName": {
+            "type": "string"
+          },
+          "surname": {
+            "type": "string"
+          },
+          "membershipTypeName": {
+            "type": "string"
+          },
+          "joinedAt": {
+            "type": "string",
+            "format": "date-time"
+          }
+        }
+      },
+      "RecentRenewalDto": {
+        "required": [
+          "membershipId",
+          "memberId",
+          "firstName",
+          "surname",
+          "membershipTypeName",
+          "renewedAt",
+          "newEndDate"
+        ],
+        "type": "object",
+        "properties": {
+          "membershipId": {
+            "pattern": "^-?(?:0|[1-9]\\d*)$",
+            "type": [
+              "integer",
+              "string"
+            ],
+            "format": "int32"
+          },
+          "memberId": {
+            "pattern": "^-?(?:0|[1-9]\\d*)$",
+            "type": [
+              "integer",
+              "string"
+            ],
+            "format": "int32"
+          },
+          "firstName": {
+            "type": "string"
+          },
+          "surname": {
+            "type": "string"
+          },
+          "membershipTypeName": {
+            "type": "string"
+          },
+          "renewedAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "newEndDate": {
+            "type": "string",
+            "format": "date-time"
           }
         }
       },

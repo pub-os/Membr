@@ -5,12 +5,12 @@
 <div z-card class="m-4">
   <div z-card-header>
     <div class="flex items-center gap-2">
-      <div z-card-title class="text-xl">{{ member()?.firstName }} {{ member()?.surname }}</div>
+      <div z-card-title class="text-xl" [zTitle]="(member()?.firstName ?? '') + ' ' + (member()?.surname ?? '')"></div>
       @if (hasMultipleActiveMemberships()) {
         <z-badge zType="secondary">{{ activeMembershipCount() }} active memberships</z-badge>
       }
     </div>
-    <div z-card-description>Member overview</div>
+    <div z-card-description [zDescription]="'Member overview'"></div>
     <div z-card-action>
       <a z-button zType="outline" routerLink="/member/list">Back to List</a>
     </div>
@@ -42,8 +42,8 @@
 
 <div z-card class="m-4">
   <div z-card-header>
-    <div z-card-title>Memberships</div>
-    <div z-card-description>Memberships held by this member.</div>
+    <div z-card-title [zTitle]="'Memberships'"></div>
+    <div z-card-description [zDescription]="'Memberships held by this member.'"></div>
     <div z-card-action>
       <button z-button (click)="openAddMembershipModal()">+ Add Membership</button>
     </div>
@@ -102,8 +102,8 @@
 
 <div z-card class="m-4">
   <div z-card-header>
-    <div z-card-title>Contact Details</div>
-    <div z-card-description>Phone numbers and email addresses for this member.</div>
+    <div z-card-title [zTitle]="'Contact Details'"></div>
+    <div z-card-description [zDescription]="'Phone numbers and email addresses for this member.'"></div>
     <div z-card-action>
       <button z-button (click)="openAddContactModal()">+ Add Contact</button>
     </div>
@@ -186,8 +186,8 @@
 
 <div z-card class="m-4">
   <div z-card-header>
-    <div z-card-title>Tokens</div>
-    <div z-card-description>RFID cards and other tokens that resolve to this member.</div>
+    <div z-card-title [zTitle]="'Tokens'"></div>
+    <div z-card-description [zDescription]="'RFID cards and other tokens that resolve to this member.'"></div>
     <div z-card-action>
       <button z-button (click)="openAddTokenModal()">+ Add Token</button>
     </div>
@@ -248,8 +248,8 @@
 
 <div z-card class="m-4">
   <div z-card-header>
-    <div z-card-title>Custom Fields</div>
-    <div z-card-description>Values for this member's custom fields.</div>
+    <div z-card-title [zTitle]="'Custom Fields'"></div>
+    <div z-card-description [zDescription]="'Values for this member\'s custom fields.'"></div>
   </div>
 
   <div z-card-content>
@@ -291,8 +291,8 @@
   <div class="fixed inset-0 z-50 flex items-center justify-center bg-black/50" (click)="closeAddMembershipModal()">
     <div z-card class="m-4 w-full max-w-sm" (click)="$event.stopPropagation()">
       <div z-card-header>
-        <div z-card-title>Add membership</div>
-        <div z-card-description>Choose a membership type to add for this member.</div>
+        <div z-card-title [zTitle]="'Add membership'"></div>
+        <div z-card-description [zDescription]="'Choose a membership type to add for this member.'"></div>
       </div>
       <div z-card-content>
         @if (membershipError()) {
@@ -324,8 +324,8 @@
   <div class="fixed inset-0 z-50 flex items-center justify-center bg-black/50" (click)="closeAddContactModal()">
     <div z-card class="m-4 w-full max-w-sm" (click)="$event.stopPropagation()">
       <div z-card-header>
-        <div z-card-title>Add contact detail</div>
-        <div z-card-description>Add a phone number or email address for this member.</div>
+        <div z-card-title [zTitle]="'Add contact detail'"></div>
+        <div z-card-description [zDescription]="'Add a phone number or email address for this member.'"></div>
       </div>
       <div z-card-content class="grid gap-3">
         @if (contactError()) {
@@ -364,8 +364,8 @@
   <div class="fixed inset-0 z-50 flex items-center justify-center bg-black/50" (click)="closeAddTokenModal()">
     <div z-card class="m-4 w-full max-w-sm" (click)="$event.stopPropagation()">
       <div z-card-header>
-        <div z-card-title>Add token</div>
-        <div z-card-description>Assign a new token to this member. Scan an RFID card into the value field, or type it in.</div>
+        <div z-card-title [zTitle]="'Add token'"></div>
+        <div z-card-description [zDescription]="'Assign a new token to this member. Scan an RFID card into the value field, or type it in.'"></div>
       </div>
       <div z-card-content class="grid gap-3">
         @if (tokenError()) {
@@ -400,9 +400,9 @@
   <div class="fixed inset-0 z-50 flex items-center justify-center bg-black/50" (click)="cancelRevokeToken()">
     <div z-card class="m-4 w-full max-w-sm" (click)="$event.stopPropagation()">
       <div z-card-header>
-        <div z-card-title>Revoke token</div>
-        <div z-card-description>
-          Revoke the {{ pendingToken.tokenType }} token "{{ pendingToken.value }}"? It will no longer resolve to this member.
+        <div z-card-title [zTitle]="'Revoke token'"></div>
+        <div z-card-description
+             [zDescription]="'Revoke the ' + pendingToken.tokenType + ' token &quot;' + pendingToken.value + '&quot;? It will no longer resolve to this member.'">
         </div>
       </div>
       <div z-card-footer class="flex justify-end gap-2">
@@ -417,9 +417,9 @@
   <div class="fixed inset-0 z-50 flex items-center justify-center bg-black/50" (click)="cancelRenewMembership()">
     <div z-card class="m-4 w-full max-w-sm" (click)="$event.stopPropagation()">
       <div z-card-header>
-        <div z-card-title>Confirm renewal</div>
-        <div z-card-description>
-          Renew the {{ pending.membershipTypeName }} membership (currently expires {{ pending.endDate | date:'mediumDate' }})?
+        <div z-card-title [zTitle]="'Confirm renewal'"></div>
+        <div z-card-description
+             [zDescription]="'Renew the ' + pending.membershipTypeName + ' membership (currently expires ' + (pending.endDate | date:'mediumDate') + ')?'">
         </div>
       </div>
       <div z-card-footer class="flex justify-end gap-2">
