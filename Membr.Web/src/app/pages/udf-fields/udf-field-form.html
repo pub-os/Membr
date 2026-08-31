@@ -4,8 +4,8 @@
 
 <div z-card class="m-4">
   <div z-card-header>
-    <div z-card-title>{{ isEditMode() ? 'Edit Custom Field' : 'New Custom Field' }}</div>
-    <div z-card-description>Define a custom field and its default value for members.</div>
+    <div z-card-title [zTitle]="isEditMode() ? 'Edit Custom Field' : 'New Custom Field'"></div>
+    <div z-card-description zDescription="Define a custom field and its default value for members."></div>
   </div>
 
   <div z-card-content>

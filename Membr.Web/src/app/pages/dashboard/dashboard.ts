@@ -1,5 +1,6 @@
+import { DatePipe } from '@angular/common';
 import { Component, OnInit, computed, inject, signal } from '@angular/core';
-import { Color, LegendPosition, NgxChartsModule, ScaleType } from '@swimlane/ngx-charts';
+import { Color, NgxChartsModule, ScaleType } from '@swimlane/ngx-charts';
 
 import { ZardAlertComponent } from '@/shared/components/alert/alert.component';
 import { ZardCardImports } from '@/shared/components/card/card.imports';
@@ -24,18 +25,16 @@ interface SeriesDatum {
   selector: 'app-dashboard',
   templateUrl: './dashboard.html',
   styleUrl: './dashboard.scss',
-  imports: [ZardCardImports, ZardAlertComponent, NgxChartsModule],
+  imports: [ZardCardImports, ZardAlertComponent, NgxChartsModule, DatePipe],
 })
 export class DashboardComponent implements OnInit {
   private dashboardService = inject(DashboardService);
-
-  readonly legendPosition = LegendPosition.Below;
 
   readonly breakdownScheme: Color = {
     name: 'membershipTypeBreakdown',
     selectable: false,
     group: ScaleType.Ordinal,
-    domain: ['#0F6E56'],
+    domain: ['#0F6E56', '#4FB894', '#1B6EC2', '#9AD9C4', '#0A4D3C'],
   };
 
   readonly activityScheme: Color = {
@@ -61,14 +60,20 @@ export class DashboardComponent implements OnInit {
 
   readonly monthlyActivity = computed<SeriesDatum[]>(() => {
     const activity = this.stats()?.monthlyActivity ?? [];
-    return activity.map(m => ({
+    const points = activity.map(m => ({
       name: `${MONTH_LABELS[Number(m.month) - 1]} ${String(m.year).slice(2)}`,
-      series: [
-        { name: 'New memberships', value: Number(m.newMemberships) },
-        { name: 'Renewals', value: Number(m.renewals) },
-      ],
+      newMemberships: Number(m.newMemberships),
+      renewals: Number(m.renewals),
     }));
+
+    return [
+      { name: 'New memberships', series: points.map(p => ({ name: p.name, value: p.newMemberships })) },
+      { name: 'Renewals', series: points.map(p => ({ name: p.name, value: p.renewals })) },
+    ];
   });
+
+  readonly recentlyJoinedMembers = computed(() => this.stats()?.recentlyJoinedMembers ?? []);
+  readonly recentRenewals = computed(() => this.stats()?.recentRenewals ?? []);
 
   ngOnInit(): void {
     this.loading.set(true);

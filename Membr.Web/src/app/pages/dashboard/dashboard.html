@@ -11,7 +11,7 @@
     <div class="grid grid-cols-1 gap-4 sm:grid-cols-2">
       <div z-card>
         <div z-card-header>
-          <div z-card-description>Total members</div>
+          <div z-card-description [zDescription]="'Total members'"></div>
         </div>
         <div z-card-content>
           <div class="text-3xl font-semibold tabular-nums">{{ totalMembers() }}</div>
@@ -20,7 +20,7 @@
 
       <div z-card>
         <div z-card-header>
-          <div z-card-description>Members with an active membership</div>
+          <div z-card-description [zDescription]="'Members with an active membership'"></div>
         </div>
         <div z-card-content>
           <div class="text-3xl font-semibold tabular-nums">{{ activeMembers() }}</div>
@@ -31,22 +31,19 @@
     <div class="grid grid-cols-1 gap-4 xl:grid-cols-2">
       <div z-card>
         <div z-card-header>
-          <div z-card-title>Active memberships by type</div>
-          <div z-card-description>Current breakdown of active members per membership type.</div>
+          <div z-card-title [zTitle]="'Active memberships by type'"></div>
+          <div z-card-description [zDescription]="'Current breakdown of active members per membership type.'"></div>
         </div>
         <div z-card-content>
           @if (membershipTypeBreakdown().length) {
             <div class="chart-frame">
-              <ngx-charts-bar-vertical
+              <ngx-charts-pie-chart
                 [results]="membershipTypeBreakdown()"
                 [scheme]="breakdownScheme"
-                [xAxis]="true"
-                [yAxis]="true"
-                [showYAxisLabel]="true"
-                yAxisLabel="Active members"
-                [roundDomains]="true"
-                [roundEdges]="true"
-                [barPadding]="12"
+                [labels]="true"
+                [trimLabels]="false"
+                [doughnut]="true"
+                [legend]="false"
               />
             </div>
           } @else {
@@ -57,29 +54,91 @@
 
       <div z-card>
         <div z-card-header>
-          <div z-card-title>New memberships &amp; renewals</div>
-          <div z-card-description>Monthly activity over the last 12 months.</div>
+          <div z-card-title [zTitle]="'New memberships &amp; renewals'"></div>
+          <div z-card-description [zDescription]="'Monthly activity over the last 12 months.'"></div>
         </div>
         <div z-card-content>
           @if (monthlyActivity().length) {
             <div class="chart-frame">
-              <ngx-charts-bar-vertical-2d
+              <ngx-charts-line-chart
                 [results]="monthlyActivity()"
                 [scheme]="activityScheme"
                 [xAxis]="true"
                 [yAxis]="true"
                 [showYAxisLabel]="true"
                 yAxisLabel="Count"
-                [legend]="true"
-                [legendPosition]="legendPosition"
+                [autoScale]="true"
+                [legend]="false"
                 [roundDomains]="true"
-                [roundEdges]="true"
-                [groupPadding]="16"
-                [barPadding]="4"
+                [timeline]="false"
               />
             </div>
           } @else {
             <p class="text-muted-foreground py-4 text-center text-sm">No activity yet</p>
+          }
+        </div>
+      </div>
+    </div>
+
+    <div class="grid grid-cols-1 gap-4 xl:grid-cols-2">
+      <div z-card>
+        <div z-card-header>
+          <div z-card-title [zTitle]="'Recently joined members'"></div>
+          <div z-card-description [zDescription]="'The last 5 members to start a membership.'"></div>
+        </div>
+        <div z-card-content>
+          @if (recentlyJoinedMembers().length) {
+            <table class="w-full text-sm">
+              <thead>
+                <tr class="border-border border-b text-left text-xs text-muted-foreground">
+                  <th class="pb-2 font-medium">Member</th>
+                  <th class="pb-2 font-medium">Membership type</th>
+                  <th class="pb-2 text-right font-medium">Joined</th>
+                </tr>
+              </thead>
+              <tbody>
+                @for (member of recentlyJoinedMembers(); track member.memberId) {
+                  <tr class="border-border/50 border-b last:border-0">
+                    <td class="py-2">{{ member.firstName }} {{ member.surname }}</td>
+                    <td class="py-2">{{ member.membershipTypeName }}</td>
+                    <td class="py-2 text-right tabular-nums">{{ member.joinedAt | date: 'd MMM y' }}</td>
+                  </tr>
+                }
+              </tbody>
+            </table>
+          } @else {
+            <p class="text-muted-foreground py-4 text-center text-sm">No members yet</p>
+          }
+        </div>
+      </div>
+
+      <div z-card>
+        <div z-card-header>
+          <div z-card-title [zTitle]="'Recent membership renewals'"></div>
+          <div z-card-description [zDescription]="'The last 5 memberships renewed.'"></div>
+        </div>
+        <div z-card-content>
+          @if (recentRenewals().length) {
+            <table class="w-full text-sm">
+              <thead>
+                <tr class="border-border border-b text-left text-xs text-muted-foreground">
+                  <th class="pb-2 font-medium">Member</th>
+                  <th class="pb-2 font-medium">Membership type</th>
+                  <th class="pb-2 text-right font-medium">Renewed</th>
+                </tr>
+              </thead>
+              <tbody>
+                @for (renewal of recentRenewals(); track renewal.membershipId + '-' + renewal.renewedAt) {
+                  <tr class="border-border/50 border-b last:border-0">
+                    <td class="py-2">{{ renewal.firstName }} {{ renewal.surname }}</td>
+                    <td class="py-2">{{ renewal.membershipTypeName }}</td>
+                    <td class="py-2 text-right tabular-nums">{{ renewal.renewedAt | date: 'd MMM y' }}</td>
+                  </tr>
+                }
+              </tbody>
+            </table>
+          } @else {
+            <p class="text-muted-foreground py-4 text-center text-sm">No renewals yet</p>
           }
         </div>
       </div>
