@@ -23,6 +23,46 @@ namespace Membr.Module.Member.Persistence.Migrations
 
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
 
+            modelBuilder.Entity("Membr.Module.Member.Domain.ContactInformation", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer")
+                        .HasColumnName("id");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("ContactDetail")
+                        .IsRequired()
+                        .HasMaxLength(320)
+                        .HasColumnType("character varying(320)")
+                        .HasColumnName("contact_detail");
+
+                    b.Property<string>("ContactType")
+                        .IsRequired()
+                        .HasMaxLength(20)
+                        .HasColumnType("character varying(20)")
+                        .HasColumnName("contact_type");
+
+                    b.Property<bool>("IsPrimary")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("boolean")
+                        .HasDefaultValue(false)
+                        .HasColumnName("is_primary");
+
+                    b.Property<int>("MemberId")
+                        .HasColumnType("integer")
+                        .HasColumnName("member_id");
+
+                    b.HasKey("Id")
+                        .HasName("pk_contact_information");
+
+                    b.HasIndex("MemberId", "ContactType")
+                        .HasDatabaseName("ix_contact_information_member_id_contact_type");
+
+                    b.ToTable("contact_information", "members");
+                });
+
             modelBuilder.Entity("Membr.Module.Member.Domain.Member", b =>
                 {
                     b.Property<int>("Id")
@@ -238,6 +278,58 @@ namespace Membr.Module.Member.Persistence.Migrations
                     b.ToTable("membership_types", "members");
                 });
 
+            modelBuilder.Entity("Membr.Module.Member.Domain.Token", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer")
+                        .HasColumnName("id");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("created_at");
+
+                    b.Property<bool>("IsRevoked")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("boolean")
+                        .HasDefaultValue(false)
+                        .HasColumnName("is_revoked");
+
+                    b.Property<int>("MemberId")
+                        .HasColumnType("integer")
+                        .HasColumnName("member_id");
+
+                    b.Property<DateTime?>("RevokedAt")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("revoked_at");
+
+                    b.Property<string>("TokenType")
+                        .IsRequired()
+                        .HasMaxLength(20)
+                        .HasColumnType("character varying(20)")
+                        .HasColumnName("token_type");
+
+                    b.Property<string>("Value")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("character varying(100)")
+                        .HasColumnName("value");
+
+                    b.HasKey("Id")
+                        .HasName("pk_tokens");
+
+                    b.HasIndex("MemberId")
+                        .HasDatabaseName("ix_tokens_member_id");
+
+                    b.HasIndex("Value")
+                        .IsUnique()
+                        .HasDatabaseName("ix_tokens_value");
+
+                    b.ToTable("tokens", "members");
+                });
+
             modelBuilder.Entity("Membr.Module.Member.Domain.UdfDefinition", b =>
                 {
                     b.Property<int>("Id")
@@ -283,6 +375,18 @@ namespace Membr.Module.Member.Persistence.Migrations
                         .HasDatabaseName("ix_udf_definitions_name");
 
                     b.ToTable("udf_definitions", "members");
+                });
+
+            modelBuilder.Entity("Membr.Module.Member.Domain.ContactInformation", b =>
+                {
+                    b.HasOne("Membr.Module.Member.Domain.Member", "Member")
+                        .WithMany()
+                        .HasForeignKey("MemberId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired()
+                        .HasConstraintName("fk_contact_information_members_member_id");
+
+                    b.Navigation("Member");
                 });
 
             modelBuilder.Entity("Membr.Module.Member.Domain.MemberUdfValue", b =>
@@ -337,6 +441,18 @@ namespace Membr.Module.Member.Persistence.Migrations
                         .HasConstraintName("fk_membership_renewals_memberships_membership_id");
 
                     b.Navigation("Membership");
+                });
+
+            modelBuilder.Entity("Membr.Module.Member.Domain.Token", b =>
+                {
+                    b.HasOne("Membr.Module.Member.Domain.Member", "Member")
+                        .WithMany()
+                        .HasForeignKey("MemberId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired()
+                        .HasConstraintName("fk_tokens_members_member_id");
+
+                    b.Navigation("Member");
                 });
 #pragma warning restore 612, 618
         }

@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 140 140" role="img" aria-label="Membr">
+  <title>Membr</title>
+  <rect width="140" height="140" rx="32" fill="#0F6E56"/>
+  <rect x="46" y="30" width="60" height="74" rx="10" fill="#4FB894"/>
+  <rect x="24" y="52" width="86" height="60" rx="10" fill="#F2FBF7"/>
+  <circle cx="46" cy="74" r="8" fill="#0A4D3C"/>
+  <path d="M32 100 C32 91 38.3 84 46 84 S60 91 60 100" fill="#0A4D3C"/>
+  <rect x="62" y="68" width="36" height="6" rx="3" fill="#9AD9C4"/>
+  <rect x="62" y="80" width="26" height="6" rx="3" fill="#9AD9C4"/>
+</svg>

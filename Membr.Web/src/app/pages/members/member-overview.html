@@ -102,6 +102,152 @@
 
 <div z-card class="m-4">
   <div z-card-header>
+    <div z-card-title>Contact Details</div>
+    <div z-card-description>Phone numbers and email addresses for this member.</div>
+    <div z-card-action>
+      <button z-button (click)="openAddContactModal()">+ Add Contact</button>
+    </div>
+  </div>
+
+  <div z-card-content>
+    @if (contactError() && !showAddContactModal()) {
+      <z-alert zType="destructive" [zTitle]="contactError()" class="mb-4" />
+    }
+
+    @if (contactsLoading()) {
+      <p class="text-muted-foreground py-4 text-center text-sm">Loading...</p>
+    }
+
+    @if (!contactsLoading() && contacts().length === 0) {
+      <p class="text-muted-foreground py-4 text-center text-sm">No contact details yet</p>
+    }
+
+    @if (!contactsLoading() && contacts().length > 0) {
+      <table z-table>
+        <thead z-table-header>
+          <tr z-table-row>
+            <th z-table-head>Type</th>
+            <th z-table-head>Detail</th>
+            <th z-table-head>Primary</th>
+            <th z-table-head></th>
+          </tr>
+        </thead>
+        <tbody z-table-body>
+          @for (contact of contacts(); track contact.id) {
+            <tr z-table-row>
+              @if (editingContactId() === contact.id) {
+                <td z-table-cell>
+                  <select [(ngModel)]="editContactDraft.contactType"
+                          class="border-input h-9 rounded-md border bg-transparent px-3 py-1 text-sm shadow-xs">
+                    @for (type of contactTypes; track type) {
+                      <option [ngValue]="type">{{ type }}</option>
+                    }
+                  </select>
+                </td>
+                <td z-table-cell>
+                  <input z-input type="text" [(ngModel)]="editContactDraft.contactDetail" />
+                </td>
+                <td z-table-cell>
+                  <input type="checkbox" [(ngModel)]="editContactDraft.isPrimary" />
+                </td>
+                <td z-table-cell class="flex gap-2">
+                  <button z-button zSize="sm" [zLoading]="contactActionLoading() === contact.id"
+                          [disabled]="contactActionLoading() !== null" (click)="saveEditContact(contact)">
+                    Save
+                  </button>
+                  <button z-button zType="outline" zSize="sm" (click)="cancelEditContact()">Cancel</button>
+                </td>
+              } @else {
+                <td z-table-cell>{{ contact.contactType }}</td>
+                <td z-table-cell>{{ contact.contactDetail }}</td>
+                <td z-table-cell>
+                  @if (contact.isPrimary) {
+                    <z-badge zType="default">Primary</z-badge>
+                  }
+                </td>
+                <td z-table-cell class="flex gap-2">
+                  <button z-button zType="outline" zSize="sm" [disabled]="contactActionLoading() !== null"
+                          (click)="startEditContact(contact)">
+                    Edit
+                  </button>
+                  <button z-button zType="outline" zSize="sm" [zLoading]="contactActionLoading() === contact.id"
+                          [disabled]="contactActionLoading() !== null" (click)="deleteContact(contact)">
+                    Delete
+                  </button>
+                </td>
+              }
+            </tr>
+          }
+        </tbody>
+      </table>
+    }
+  </div>
+</div>
+
+<div z-card class="m-4">
+  <div z-card-header>
+    <div z-card-title>Tokens</div>
+    <div z-card-description>RFID cards and other tokens that resolve to this member.</div>
+    <div z-card-action>
+      <button z-button (click)="openAddTokenModal()">+ Add Token</button>
+    </div>
+  </div>
+
+  <div z-card-content>
+    @if (tokenError() && !showAddTokenModal()) {
+      <z-alert zType="destructive" [zTitle]="tokenError()" class="mb-4" />
+    }
+
+    @if (tokensLoading()) {
+      <p class="text-muted-foreground py-4 text-center text-sm">Loading...</p>
+    }
+
+    @if (!tokensLoading() && tokens().length === 0) {
+      <p class="text-muted-foreground py-4 text-center text-sm">No tokens assigned yet</p>
+    }
+
+    @if (!tokensLoading() && tokens().length > 0) {
+      <table z-table>
+        <thead z-table-header>
+          <tr z-table-row>
+            <th z-table-head>Type</th>
+            <th z-table-head>Value</th>
+            <th z-table-head>Status</th>
+            <th z-table-head>Created</th>
+            <th z-table-head></th>
+          </tr>
+        </thead>
+        <tbody z-table-body>
+          @for (token of tokens(); track token.id) {
+            <tr z-table-row>
+              <td z-table-cell>{{ token.tokenType }}</td>
+              <td z-table-cell>{{ token.value }}</td>
+              <td z-table-cell>
+                @if (token.isRevoked) {
+                  <z-badge zType="outline">Revoked</z-badge>
+                } @else {
+                  <z-badge zType="default">Active</z-badge>
+                }
+              </td>
+              <td z-table-cell>{{ token.createdAt | date:'mediumDate' }}</td>
+              <td z-table-cell>
+                @if (!token.isRevoked) {
+                  <button z-button zType="outline" zSize="sm" [zLoading]="tokenActionLoading() === token.id"
+                          [disabled]="tokenActionLoading() !== null" (click)="requestRevokeToken(token)">
+                    Revoke
+                  </button>
+                }
+              </td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    }
+  </div>
+</div>
+
+<div z-card class="m-4">
+  <div z-card-header>
     <div z-card-title>Custom Fields</div>
     <div z-card-description>Values for this member's custom fields.</div>
   </div>
@@ -169,6 +315,99 @@
                 (click)="addMembership()">
           Add
         </button>
+      </div>
+    </div>
+  </div>
+}
+
+@if (showAddContactModal()) {
+  <div class="fixed inset-0 z-50 flex items-center justify-center bg-black/50" (click)="closeAddContactModal()">
+    <div z-card class="m-4 w-full max-w-sm" (click)="$event.stopPropagation()">
+      <div z-card-header>
+        <div z-card-title>Add contact detail</div>
+        <div z-card-description>Add a phone number or email address for this member.</div>
+      </div>
+      <div z-card-content class="grid gap-3">
+        @if (contactError()) {
+          <z-alert zType="destructive" [zTitle]="contactError()" class="mb-1" />
+        }
+        <div class="grid gap-1.5">
+          <label for="contactType" class="text-sm font-medium">Type</label>
+          <select id="contactType" [(ngModel)]="newContact.contactType"
+                  class="border-input h-9 rounded-md border bg-transparent px-3 py-1 text-sm shadow-xs">
+            @for (type of contactTypes; track type) {
+              <option [ngValue]="type">{{ type }}</option>
+            }
+          </select>
+        </div>
+        <div class="grid gap-1.5">
+          <label for="contactDetail" class="text-sm font-medium">Detail</label>
+          <input id="contactDetail" z-input type="text" [(ngModel)]="newContact.contactDetail" placeholder="Email or phone number" />
+        </div>
+        <div class="flex items-center gap-1.5">
+          <input type="checkbox" [(ngModel)]="newContact.isPrimary" id="newContactPrimary" />
+          <label for="newContactPrimary" class="text-sm font-medium">Primary</label>
+        </div>
+      </div>
+      <div z-card-footer class="flex justify-end gap-2">
+        <button z-button zType="outline" (click)="closeAddContactModal()">Cancel</button>
+        <button z-button [zLoading]="contactActionLoading() === 'create'"
+                [disabled]="!newContact.contactDetail.trim() || contactActionLoading() !== null" (click)="addContact()">
+          Add
+        </button>
+      </div>
+    </div>
+  </div>
+}
+
+@if (showAddTokenModal()) {
+  <div class="fixed inset-0 z-50 flex items-center justify-center bg-black/50" (click)="closeAddTokenModal()">
+    <div z-card class="m-4 w-full max-w-sm" (click)="$event.stopPropagation()">
+      <div z-card-header>
+        <div z-card-title>Add token</div>
+        <div z-card-description>Assign a new token to this member. Scan an RFID card into the value field, or type it in.</div>
+      </div>
+      <div z-card-content class="grid gap-3">
+        @if (tokenError()) {
+          <z-alert zType="destructive" [zTitle]="tokenError()" class="mb-1" />
+        }
+        <div class="grid gap-1.5">
+          <label for="tokenType" class="text-sm font-medium">Type</label>
+          <select id="tokenType" [(ngModel)]="newToken.tokenType"
+                  class="border-input h-9 rounded-md border bg-transparent px-3 py-1 text-sm shadow-xs">
+            @for (type of tokenTypes; track type) {
+              <option [ngValue]="type">{{ type }}</option>
+            }
+          </select>
+        </div>
+        <div class="grid gap-1.5">
+          <label for="tokenValue" class="text-sm font-medium">Value</label>
+          <input id="tokenValue" z-input type="text" [(ngModel)]="newToken.value" placeholder="Scan or enter token value" autofocus />
+        </div>
+      </div>
+      <div z-card-footer class="flex justify-end gap-2">
+        <button z-button zType="outline" (click)="closeAddTokenModal()">Cancel</button>
+        <button z-button [zLoading]="tokenActionLoading() === 'create'"
+                [disabled]="!newToken.value.trim() || tokenActionLoading() !== null" (click)="addToken()">
+          Add
+        </button>
+      </div>
+    </div>
+  </div>
+}
+
+@if (tokenPendingRevoke(); as pendingToken) {
+  <div class="fixed inset-0 z-50 flex items-center justify-center bg-black/50" (click)="cancelRevokeToken()">
+    <div z-card class="m-4 w-full max-w-sm" (click)="$event.stopPropagation()">
+      <div z-card-header>
+        <div z-card-title>Revoke token</div>
+        <div z-card-description>
+          Revoke the {{ pendingToken.tokenType }} token "{{ pendingToken.value }}"? It will no longer resolve to this member.
+        </div>
+      </div>
+      <div z-card-footer class="flex justify-end gap-2">
+        <button z-button zType="outline" (click)="cancelRevokeToken()">Cancel</button>
+        <button z-button (click)="confirmRevokeToken()">Revoke</button>
       </div>
     </div>
   </div>

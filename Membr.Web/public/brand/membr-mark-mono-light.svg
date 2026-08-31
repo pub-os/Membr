@@ -1,0 +1,17 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 140 140" role="img" aria-label="Membr">
+  <title>Membr</title>
+  <!-- Single-ink reversed mark for dark backgrounds. The avatar and record lines
+       are cut out of the front card so the dark substrate shows through. -->
+  <defs>
+    <mask id="membr-front-card-mask">
+      <rect x="24" y="52" width="86" height="60" rx="10" fill="#FFFFFF"/>
+      <circle cx="46" cy="74" r="8" fill="#000000"/>
+      <path d="M32 100 C32 91 38.3 84 46 84 S60 91 60 100" fill="#000000"/>
+      <rect x="62" y="68" width="36" height="6" rx="3" fill="#000000"/>
+      <rect x="62" y="80" width="26" height="6" rx="3" fill="#000000"/>
+    </mask>
+  </defs>
+  <rect width="140" height="140" rx="32" fill="#F2FBF7"/>
+  <rect x="46" y="30" width="60" height="74" rx="10" fill="#F2FBF7" fill-opacity="0.45"/>
+  <rect x="24" y="52" width="86" height="60" rx="10" fill="#F2FBF7" mask="url(#membr-front-card-mask)"/>
+</svg>

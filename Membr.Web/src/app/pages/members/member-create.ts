@@ -7,6 +7,10 @@ import { ZardCardImports } from '@/shared/components/card/card.imports';
 import { ZardInputComponent } from '@/shared/components/input/input.component';
 
 import { MemberService, CreateMemberRequest } from '@/services/member.service';
+import { ContactDto } from '@/services/member-contact.service';
+
+type ContactType = ContactDto['contactType'];
+type NewContactRow = { contactType: ContactType; contactDetail: string; isPrimary: boolean };
 
 @Component({
   selector: 'app-member-create',
@@ -19,11 +23,24 @@ export class CreateMembersComponent {
   error = signal('');
   successMessage = signal('');
 
+  contactTypes: ContactType[] = ['Email', 'Phone'];
+
   newMember: CreateMemberRequest = {
     firstName: '',
     surname: '',
-    dateOfBirth: ''
+    dateOfBirth: '',
+    contacts: [],
   };
+
+  contacts: NewContactRow[] = [];
+
+  addContactRow(): void {
+    this.contacts.push({ contactType: 'Email', contactDetail: '', isPrimary: false });
+  }
+
+  removeContactRow(index: number): void {
+    this.contacts.splice(index, 1);
+  }
 
   createMember(): void {
     if (!this.newMember.firstName.trim() || !this.newMember.surname.trim() || !this.newMember.dateOfBirth) {
@@ -35,11 +52,17 @@ export class CreateMembersComponent {
     this.error.set('');
     this.successMessage.set('');
 
-    this.memberService.create(this.newMember).subscribe({
+    const request: CreateMemberRequest = {
+      ...this.newMember,
+      contacts: this.contacts.filter(c => c.contactDetail.trim()),
+    };
+
+    this.memberService.create(request).subscribe({
       next: (created) => {
         this.successMessage.set(`Member ${created.firstName} ${created.surname} created`);
         this.loading.set(false);
-        this.newMember = { firstName: '', surname: '', dateOfBirth: '' };
+        this.newMember = { firstName: '', surname: '', dateOfBirth: '', contacts: [] };
+        this.contacts = [];
       },
       error: (err) => {
         this.error.set(err.error?.title || 'Failed to create member');

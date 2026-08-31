@@ -1,11 +1,13 @@
 using System.Text;
 using Membr.Module.Identity.Application;
+using Membr.Module.Identity.Auth;
 using Membr.Module.Identity.Application.Handlers;
 using Membr.Module.Identity.Application.Handlers.Users;
 using Membr.Module.Identity.Domain;
 using Membr.Module.Identity.Endpoints;
 using Membr.Module.Identity.Endpoints.Admin;
 using Membr.Module.Identity.Persistence;
+using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
@@ -59,10 +61,14 @@ public static class IdentityModule
                     ValidateLifetime = true,
                     ClockSkew = TimeSpan.FromSeconds(30)
                 };
-            });
+            })
+            .AddScheme<AuthenticationSchemeOptions, ApiKeyAuthenticationHandler>(ApiKeyAuthenticationHandler.SchemeName, _ => { });
 
         services.AddAuthorizationBuilder()
-            .AddPolicy("AdminOnly", p => p.RequireRole("Admin"));
+            .AddPolicy("AdminOnly", p => p.RequireRole("Admin"))
+            .AddPolicy("DeviceAccess", p => p
+                .AddAuthenticationSchemes(ApiKeyAuthenticationHandler.SchemeName)
+                .RequireAuthenticatedUser());
 
         // Throttles credential-guessing against /auth/login and /auth/refresh: UserManager.CheckPasswordAsync
         // doesn't go through SignInManager, so Identity's own lockout counter is never incremented and this

@@ -6,7 +6,7 @@
   },
   "servers": [
     {
-      "url": "http://localhost:5219/"
+      "url": "http://localhost:5299/"
     }
   ],
   "paths": {
@@ -764,6 +764,217 @@
         }
       }
     },
+    "/admin/members/{memberId}/contacts": {
+      "get": {
+        "tags": [
+          "Admin: Member Contacts"
+        ],
+        "summary": "List a member's contact details",
+        "operationId": "ListMemberContacts",
+        "parameters": [
+          {
+            "name": "memberId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "pattern": "^-?(?:0|[1-9]\\d*)$",
+              "type": [
+                "integer",
+                "string"
+              ],
+              "format": "int32"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/ContactDto"
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "Admin: Member Contacts"
+        ],
+        "summary": "Add a contact detail for a member",
+        "operationId": "CreateMemberContact",
+        "parameters": [
+          {
+            "name": "memberId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "pattern": "^-?(?:0|[1-9]\\d*)$",
+              "type": [
+                "integer",
+                "string"
+              ],
+              "format": "int32"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateMemberContactRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "description": "Created",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ContactDto"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not Found"
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HttpValidationProblemDetails"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/admin/members/{memberId}/contacts/{contactId}": {
+      "put": {
+        "tags": [
+          "Admin: Member Contacts"
+        ],
+        "summary": "Update a member's contact detail",
+        "operationId": "UpdateMemberContact",
+        "parameters": [
+          {
+            "name": "memberId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "pattern": "^-?(?:0|[1-9]\\d*)$",
+              "type": [
+                "integer",
+                "string"
+              ],
+              "format": "int32"
+            }
+          },
+          {
+            "name": "contactId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "pattern": "^-?(?:0|[1-9]\\d*)$",
+              "type": [
+                "integer",
+                "string"
+              ],
+              "format": "int32"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateMemberContactRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ContactDto"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not Found"
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HttpValidationProblemDetails"
+                }
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "Admin: Member Contacts"
+        ],
+        "summary": "Delete a member's contact detail",
+        "operationId": "DeleteMemberContact",
+        "parameters": [
+          {
+            "name": "memberId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "pattern": "^-?(?:0|[1-9]\\d*)$",
+              "type": [
+                "integer",
+                "string"
+              ],
+              "format": "int32"
+            }
+          },
+          {
+            "name": "contactId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "pattern": "^-?(?:0|[1-9]\\d*)$",
+              "type": [
+                "integer",
+                "string"
+              ],
+              "format": "int32"
+            }
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "No Content"
+          },
+          "404": {
+            "description": "Not Found"
+          }
+        }
+      }
+    },
     "/admin/members/{memberId}/udf-values": {
       "get": {
         "tags": [
@@ -871,6 +1082,215 @@
                 }
               }
             }
+          }
+        }
+      }
+    },
+    "/admin/members/{memberId}/tokens": {
+      "get": {
+        "tags": [
+          "Admin: Member Tokens"
+        ],
+        "summary": "List a member's tokens",
+        "operationId": "ListMemberTokens",
+        "parameters": [
+          {
+            "name": "memberId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "pattern": "^-?(?:0|[1-9]\\d*)$",
+              "type": [
+                "integer",
+                "string"
+              ],
+              "format": "int32"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/TokenDto"
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "Admin: Member Tokens"
+        ],
+        "summary": "Assign a new token to a member",
+        "operationId": "CreateMemberToken",
+        "parameters": [
+          {
+            "name": "memberId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "pattern": "^-?(?:0|[1-9]\\d*)$",
+              "type": [
+                "integer",
+                "string"
+              ],
+              "format": "int32"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateMemberTokenRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "description": "Created",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TokenDto"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not Found"
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HttpValidationProblemDetails"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/admin/members/{memberId}/tokens/{tokenId}": {
+      "delete": {
+        "tags": [
+          "Admin: Member Tokens"
+        ],
+        "summary": "Revoke a member's token",
+        "operationId": "RevokeMemberToken",
+        "parameters": [
+          {
+            "name": "memberId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "pattern": "^-?(?:0|[1-9]\\d*)$",
+              "type": [
+                "integer",
+                "string"
+              ],
+              "format": "int32"
+            }
+          },
+          {
+            "name": "tokenId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "pattern": "^-?(?:0|[1-9]\\d*)$",
+              "type": [
+                "integer",
+                "string"
+              ],
+              "format": "int32"
+            }
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "No Content"
+          },
+          "404": {
+            "description": "Not Found"
+          }
+        }
+      }
+    },
+    "/admin/tokens/lookup": {
+      "get": {
+        "tags": [
+          "Admin: Tokens"
+        ],
+        "summary": "Look up the member owning a token (used by the in-app scan tool)",
+        "operationId": "LookupToken",
+        "parameters": [
+          {
+            "name": "value",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TokenLookupDto"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not Found"
+          }
+        }
+      }
+    },
+    "/integrations/members/by-token/{value}": {
+      "get": {
+        "tags": [
+          "Integrations: Members"
+        ],
+        "summary": "Resolve a scanned token to its member and membership information",
+        "operationId": "LookupMemberByToken",
+        "parameters": [
+          {
+            "name": "value",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TokenLookupDto"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not Found"
           }
         }
       }
@@ -1063,11 +1483,84 @@
           }
         }
       },
+      "ContactDto": {
+        "required": [
+          "id",
+          "contactType",
+          "contactDetail",
+          "isPrimary"
+        ],
+        "type": "object",
+        "properties": {
+          "id": {
+            "pattern": "^-?(?:0|[1-9]\\d*)$",
+            "type": [
+              "integer",
+              "string"
+            ],
+            "format": "int32"
+          },
+          "contactType": {
+            "$ref": "#/components/schemas/ContactType"
+          },
+          "contactDetail": {
+            "type": "string"
+          },
+          "isPrimary": {
+            "type": "boolean"
+          }
+        }
+      },
+      "ContactType": {
+        "enum": [
+          "Email",
+          "Phone"
+        ]
+      },
+      "CreateMemberContactInput": {
+        "required": [
+          "contactType",
+          "contactDetail",
+          "isPrimary"
+        ],
+        "type": "object",
+        "properties": {
+          "contactType": {
+            "$ref": "#/components/schemas/ContactType"
+          },
+          "contactDetail": {
+            "type": "string"
+          },
+          "isPrimary": {
+            "type": "boolean"
+          }
+        }
+      },
+      "CreateMemberContactRequest": {
+        "required": [
+          "contactType",
+          "contactDetail",
+          "isPrimary"
+        ],
+        "type": "object",
+        "properties": {
+          "contactType": {
+            "$ref": "#/components/schemas/ContactType"
+          },
+          "contactDetail": {
+            "type": "string"
+          },
+          "isPrimary": {
+            "type": "boolean"
+          }
+        }
+      },
       "CreateMemberRequest": {
         "required": [
           "firstName",
           "surname",
-          "dateOfBirth"
+          "dateOfBirth",
+          "contacts"
         ],
         "type": "object",
         "properties": {
@@ -1080,6 +1573,15 @@
           "dateOfBirth": {
             "type": "string",
             "format": "date"
+          },
+          "contacts": {
+            "type": [
+              "null",
+              "array"
+            ],
+            "items": {
+              "$ref": "#/components/schemas/CreateMemberContactInput"
+            }
           }
         }
       },
@@ -1152,6 +1654,21 @@
               "string"
             ],
             "format": "int32"
+          }
+        }
+      },
+      "CreateMemberTokenRequest": {
+        "required": [
+          "tokenType",
+          "value"
+        ],
+        "type": "object",
+        "properties": {
+          "tokenType": {
+            "$ref": "#/components/schemas/TokenType"
+          },
+          "value": {
+            "type": "string"
           }
         }
       },
@@ -1707,6 +2224,120 @@
           }
         }
       },
+      "TokenDto": {
+        "required": [
+          "id",
+          "memberId",
+          "tokenType",
+          "value",
+          "isRevoked",
+          "revokedAt",
+          "createdAt"
+        ],
+        "type": "object",
+        "properties": {
+          "id": {
+            "pattern": "^-?(?:0|[1-9]\\d*)$",
+            "type": [
+              "integer",
+              "string"
+            ],
+            "format": "int32"
+          },
+          "memberId": {
+            "pattern": "^-?(?:0|[1-9]\\d*)$",
+            "type": [
+              "integer",
+              "string"
+            ],
+            "format": "int32"
+          },
+          "tokenType": {
+            "$ref": "#/components/schemas/TokenType"
+          },
+          "value": {
+            "type": "string"
+          },
+          "isRevoked": {
+            "type": "boolean"
+          },
+          "revokedAt": {
+            "type": [
+              "null",
+              "string"
+            ],
+            "format": "date-time"
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "date-time"
+          }
+        }
+      },
+      "TokenLookupDto": {
+        "required": [
+          "memberId",
+          "firstName",
+          "surname",
+          "memberships"
+        ],
+        "type": "object",
+        "properties": {
+          "memberId": {
+            "pattern": "^-?(?:0|[1-9]\\d*)$",
+            "type": [
+              "integer",
+              "string"
+            ],
+            "format": "int32"
+          },
+          "firstName": {
+            "type": "string"
+          },
+          "surname": {
+            "type": "string"
+          },
+          "memberships": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/TokenLookupMembershipDto"
+            }
+          }
+        }
+      },
+      "TokenLookupMembershipDto": {
+        "required": [
+          "membershipTypeName",
+          "startDate",
+          "endDate",
+          "isActive"
+        ],
+        "type": "object",
+        "properties": {
+          "membershipTypeName": {
+            "type": "string"
+          },
+          "startDate": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "endDate": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "isActive": {
+            "type": "boolean"
+          }
+        }
+      },
+      "TokenType": {
+        "enum": [
+          "Rfid",
+          "Qr",
+          "Barcode",
+          "Number"
+        ]
+      },
       "UdfDefinitionDto": {
         "required": [
           "id",
@@ -1783,6 +2414,25 @@
             "items": {
               "$ref": "#/components/schemas/MemberUdfValueDto"
             }
+          }
+        }
+      },
+      "UpdateMemberContactRequest": {
+        "required": [
+          "contactType",
+          "contactDetail",
+          "isPrimary"
+        ],
+        "type": "object",
+        "properties": {
+          "contactType": {
+            "$ref": "#/components/schemas/ContactType"
+          },
+          "contactDetail": {
+            "type": "string"
+          },
+          "isPrimary": {
+            "type": "boolean"
           }
         }
       },
@@ -1891,7 +2541,19 @@
       "name": "Admin: UDF Fields"
     },
     {
+      "name": "Admin: Member Contacts"
+    },
+    {
       "name": "Admin: Member UDF Values"
+    },
+    {
+      "name": "Admin: Member Tokens"
+    },
+    {
+      "name": "Admin: Tokens"
+    },
+    {
+      "name": "Integrations: Members"
     },
     {
       "name": "Auth"

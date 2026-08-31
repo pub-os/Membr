@@ -16,6 +16,8 @@ internal sealed class MembersDbContext(DbContextOptions<MembersDbContext> option
     public DbSet<MembershipSettings> MembershipSettings => Set<MembershipSettings>();
     public DbSet<UdfDefinition> UdfDefinitions => Set<UdfDefinition>();
     public DbSet<MemberUdfValue> MemberUdfValues => Set<MemberUdfValue>();
+    public DbSet<ContactInformation> ContactInformation => Set<ContactInformation>();
+    public DbSet<Token> Tokens => Set<Token>();
 
     protected override void OnModelCreating(ModelBuilder builder)
     {

@@ -15,10 +15,31 @@ internal sealed class CreateMemberHandler(MembersDbContext db, TimeProvider cloc
         };
 
         db.Members.Add(member);
+
+        foreach (var group in (command.Contacts ?? []).GroupBy(c => c.ContactType))
+        {
+            var primaryAssigned = false;
+            foreach (var input in group)
+            {
+                var isPrimary = input.IsPrimary && !primaryAssigned;
+                primaryAssigned |= isPrimary;
+
+                db.ContactInformation.Add(new ContactInformation
+                {
+                    Member = member,
+                    ContactType = input.ContactType,
+                    ContactDetail = input.ContactDetail,
+                    IsPrimary = isPrimary,
+                });
+            }
+        }
+
         await db.SaveChangesAsync(ct);
 
         return new MemberDto(member.Id, member.FirstName, member.Surname, member.DateOfBirth);
     }
 }
 
-internal sealed record CreateMemberRequest(string FirstName, string Surname, DateOnly DateOfBirth);
+internal sealed record CreateMemberContactInput(ContactType ContactType, string ContactDetail, bool IsPrimary);
+
+internal sealed record CreateMemberRequest(string FirstName, string Surname, DateOnly DateOfBirth, List<CreateMemberContactInput>? Contacts);

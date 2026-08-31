@@ -232,6 +232,42 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/admin/members/{memberId}/contacts": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** List a member's contact details */
+        get: operations["ListMemberContacts"];
+        put?: never;
+        /** Add a contact detail for a member */
+        post: operations["CreateMemberContact"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/admin/members/{memberId}/contacts/{contactId}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        /** Update a member's contact detail */
+        put: operations["UpdateMemberContact"];
+        post?: never;
+        /** Delete a member's contact detail */
+        delete: operations["DeleteMemberContact"];
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/admin/members/{memberId}/udf-values": {
         parameters: {
             query?: never;
@@ -259,6 +295,75 @@ export interface paths {
         get?: never;
         /** Update a member's value for a user-defined field */
         put: operations["UpdateMemberUdfValue"];
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/admin/members/{memberId}/tokens": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** List a member's tokens */
+        get: operations["ListMemberTokens"];
+        put?: never;
+        /** Assign a new token to a member */
+        post: operations["CreateMemberToken"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/admin/members/{memberId}/tokens/{tokenId}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        /** Revoke a member's token */
+        delete: operations["RevokeMemberToken"];
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/admin/tokens/lookup": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Look up the member owning a token (used by the in-app scan tool) */
+        get: operations["LookupToken"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/integrations/members/by-token/{value}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Resolve a scanned token to its member and membership information */
+        get: operations["LookupMemberByToken"];
+        put?: never;
         post?: never;
         delete?: never;
         options?: never;
@@ -376,11 +481,31 @@ export interface components {
         AccessTokenResponse: {
             accessToken: string;
         };
+        ContactDto: {
+            /** Format: int32 */
+            id: number | string;
+            contactType: components["schemas"]["ContactType"];
+            contactDetail: string;
+            isPrimary: boolean;
+        };
+        /** @enum {unknown} */
+        ContactType: "Email" | "Phone";
+        CreateMemberContactInput: {
+            contactType: components["schemas"]["ContactType"];
+            contactDetail: string;
+            isPrimary: boolean;
+        };
+        CreateMemberContactRequest: {
+            contactType: components["schemas"]["ContactType"];
+            contactDetail: string;
+            isPrimary: boolean;
+        };
         CreateMemberRequest: {
             firstName: string;
             surname: string;
             /** Format: date */
             dateOfBirth: string;
+            contacts: null | components["schemas"]["CreateMemberContactInput"][];
         };
         CreateMembershipRequest: {
             /** Format: int32 */
@@ -397,6 +522,10 @@ export interface components {
             fixedTermAnchorMonth: null | number | string;
             /** Format: int32 */
             fixedTermAnchorDay: null | number | string;
+        };
+        CreateMemberTokenRequest: {
+            tokenType: components["schemas"]["TokenType"];
+            value: string;
         };
         CreateUdfDefinitionRequest: {
             name: string;
@@ -527,6 +656,36 @@ export interface components {
             /** Format: int32 */
             pageSize: number | string;
         };
+        TokenDto: {
+            /** Format: int32 */
+            id: number | string;
+            /** Format: int32 */
+            memberId: number | string;
+            tokenType: components["schemas"]["TokenType"];
+            value: string;
+            isRevoked: boolean;
+            /** Format: date-time */
+            revokedAt: null | string;
+            /** Format: date-time */
+            createdAt: string;
+        };
+        TokenLookupDto: {
+            /** Format: int32 */
+            memberId: number | string;
+            firstName: string;
+            surname: string;
+            memberships: components["schemas"]["TokenLookupMembershipDto"][];
+        };
+        TokenLookupMembershipDto: {
+            membershipTypeName: string;
+            /** Format: date-time */
+            startDate: string;
+            /** Format: date-time */
+            endDate: string;
+            isActive: boolean;
+        };
+        /** @enum {unknown} */
+        TokenType: "Rfid" | "Qr" | "Barcode" | "Number";
         UdfDefinitionDto: {
             /** Format: int32 */
             id: number | string;
@@ -542,6 +701,11 @@ export interface components {
             definitions: components["schemas"]["UdfDefinitionDto"][];
             members: components["schemas"]["MemberSummaryDto"][];
             values: components["schemas"]["MemberUdfValueDto"][];
+        };
+        UpdateMemberContactRequest: {
+            contactType: components["schemas"]["ContactType"];
+            contactDetail: string;
+            isPrimary: boolean;
         };
         UpdateMembershipSettingsRequest: {
             allowMultipleMemberships: boolean;
@@ -1119,6 +1283,141 @@ export interface operations {
             };
         };
     };
+    ListMemberContacts: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                memberId: number | string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ContactDto"][];
+                };
+            };
+        };
+    };
+    CreateMemberContact: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                memberId: number | string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["CreateMemberContactRequest"];
+            };
+        };
+        responses: {
+            /** @description Created */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ContactDto"];
+                };
+            };
+            /** @description Bad Request */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["HttpValidationProblemDetails"];
+                };
+            };
+            /** @description Not Found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    UpdateMemberContact: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                memberId: number | string;
+                contactId: number | string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["UpdateMemberContactRequest"];
+            };
+        };
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ContactDto"];
+                };
+            };
+            /** @description Bad Request */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["HttpValidationProblemDetails"];
+                };
+            };
+            /** @description Not Found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    DeleteMemberContact: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                memberId: number | string;
+                contactId: number | string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description No Content */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Not Found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
     ListMemberUdfValues: {
         parameters: {
             query?: never;
@@ -1173,6 +1472,156 @@ export interface operations {
                 };
                 content: {
                     "application/problem+json": components["schemas"]["HttpValidationProblemDetails"];
+                };
+            };
+            /** @description Not Found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    ListMemberTokens: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                memberId: number | string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["TokenDto"][];
+                };
+            };
+        };
+    };
+    CreateMemberToken: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                memberId: number | string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["CreateMemberTokenRequest"];
+            };
+        };
+        responses: {
+            /** @description Created */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["TokenDto"];
+                };
+            };
+            /** @description Bad Request */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["HttpValidationProblemDetails"];
+                };
+            };
+            /** @description Not Found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    RevokeMemberToken: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                memberId: number | string;
+                tokenId: number | string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description No Content */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Not Found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    LookupToken: {
+        parameters: {
+            query: {
+                value: string;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["TokenLookupDto"];
+                };
+            };
+            /** @description Not Found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    LookupMemberByToken: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                value: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["TokenLookupDto"];
                 };
             };
             /** @description Not Found */

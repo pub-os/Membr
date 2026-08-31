@@ -1,11 +1,14 @@
 using Membr.Module.Member.Application.Handlers;
+using Membr.Module.Member.Application.Handlers.Contacts;
 using Membr.Module.Member.Application.Handlers.Dashboard;
 using Membr.Module.Member.Application.Handlers.Members;
 using Membr.Module.Member.Application.Handlers.Memberships;
 using Membr.Module.Member.Application.Handlers.MembershipTypes;
 using Membr.Module.Member.Application.Handlers.Settings;
+using Membr.Module.Member.Application.Handlers.Tokens;
 using Membr.Module.Member.Application.Handlers.Udf;
 using Membr.Module.Member.Endpoints.Admin;
+using Membr.Module.Member.Endpoints.External;
 using Membr.Module.Member.Persistence;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.EntityFrameworkCore;
@@ -48,11 +51,22 @@ public static class MemberModule
         services.AddScoped<ListMemberUdfValuesHandler>();
         services.AddScoped<ListAllMemberUdfValuesHandler>();
         services.AddScoped<UpdateMemberUdfValueHandler>();
+        services.AddScoped<ListMemberContactsHandler>();
+        services.AddScoped<CreateMemberContactHandler>();
+        services.AddScoped<UpdateMemberContactHandler>();
+        services.AddScoped<DeleteMemberContactHandler>();
+        services.AddScoped<CreateMemberTokenHandler>();
+        services.AddScoped<ListMemberTokensHandler>();
+        services.AddScoped<RevokeMemberTokenHandler>();
+        services.AddScoped<LookupTokenHandler>();
         return services;
     }
 
-    public static void MapMembersEndpoints(this IEndpointRouteBuilder app) =>
+    public static void MapMembersEndpoints(this IEndpointRouteBuilder app)
+    {
         app.MapMemberAdminRoutes();
+        app.MapMemberExternalRoutes();
+    }
 
     public static async Task MigrateAsync(IServiceProvider services)
     {
