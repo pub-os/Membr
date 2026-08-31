@@ -34,6 +34,9 @@ describe('MemberOverviewComponent', () => {
       { id: 2, memberId: 1, membershipTypeId: 2, membershipTypeName: 'Premium', startDate: '2026-01-01T00:00:00Z', endDate: '2027-01-01T00:00:00Z', isActive: true },
     ]);
     httpMock.expectOne('/admin/membershiptypes/').flush([]);
+    httpMock.expectOne('/admin/members/1/udf-values/').flush([]);
+    httpMock.expectOne('/admin/members/1/contacts/').flush([]);
+    httpMock.expectOne('/admin/members/1/tokens/').flush([]);
     await fixture.whenStable();
   });
 
